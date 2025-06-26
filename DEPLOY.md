@@ -8,6 +8,17 @@ This document describes how to deploy the EPV Research Platform to AWS ECS.
 - AWS CLI
 - An AWS account
 
+### Environment Variables
+
+Before building or running containers in production you must supply the following sensitive settings as environment variables (for example via an `.env` file, AWS Secrets Manager, or ECS task secrets):
+
+* `JWT_SECRET` – random string used for signing authentication tokens (required).
+* `ALPHA_VANTAGE_API_KEY` – Alpha Vantage data-provider key (optional but recommended).
+* `FRED_API_KEY` – St. Louis Fed (FRED) data-provider key (optional).
+* `QUANDL_API_KEY` – Nasdaq Data Link / Quandl data-provider key (optional).
+
+None of these have defaults in the codebase any longer; the application will fail to start or fall back to limited functionality unless they are provided.
+
 ## Build and Push Docker Images
 
 1.  **Build the images:**
