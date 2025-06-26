@@ -161,4 +161,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # React build
-frontend/build/ 
+frontend/build/
+
+# Security scan outputs
+safety_output.json 
