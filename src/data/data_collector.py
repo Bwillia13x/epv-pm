@@ -6,6 +6,8 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 import requests
+import asyncio
+import httpx
 from typing import Dict, List, Optional, Tuple
 from datetime import datetime, date, timedelta
 import time
@@ -109,161 +111,165 @@ class YahooFinanceSource(DataSource):
         self.session = session
         
     async def get_company_profile(self, symbol: str) -> Optional[CompanyProfile]:
-        """Get company profile from Yahoo Finance"""
-        try:
-            self.rate_limiter.wait_if_needed()
-            
-            ticker = yf.Ticker(symbol, session=self.session)
-            info = await ticker.info
-            
-            if not info or 'shortName' not in info:
+        """Get company profile from Yahoo Finance asynchronously (non-blocking)."""
+
+        def _fetch_profile() -> Optional[CompanyProfile]:
+            try:
+                ticker = yf.Ticker(symbol, session=self.session)
+                info = ticker.info  # type: ignore[attr-defined]  # blocking network call
+
+                if not info or 'shortName' not in info:
+                    return None
+
+                return CompanyProfile(
+                    symbol=symbol,
+                    company_name=info.get('shortName', ''),
+                    sector=info.get('sector'),
+                    industry=info.get('industry'),
+                    country=info.get('country'),
+                    exchange=info.get('exchange'),
+                    currency=info.get('currency'),
+                    description=info.get('longBusinessSummary'),
+                    employees=info.get('fullTimeEmployees'),
+                    market_cap=info.get('marketCap'),
+                    enterprise_value=info.get('enterpriseValue'),
+                    trailing_pe=info.get('trailingPE'),
+                    forward_pe=info.get('forwardPE'),
+                    peg_ratio=info.get('pegRatio'),
+                    dividend_rate=info.get('dividendRate'),
+                    dividend_yield=info.get('dividendYield'),
+                    payout_ratio=info.get('payoutRatio'),
+                )
+            except Exception as exc:  # pragma: no cover – depends on upstream site
+                self.logger.error(f"Error fetching profile for {symbol}: {exc}")
                 return None
-            
-            profile = CompanyProfile(
-                symbol=symbol,
-                company_name=info.get('shortName', ''),
-                sector=info.get('sector'),
-                industry=info.get('industry'),
-                country=info.get('country'),
-                exchange=info.get('exchange'),
-                currency=info.get('currency'),
-                description=info.get('longBusinessSummary'),
-                employees=info.get('fullTimeEmployees'),
-                market_cap=info.get('marketCap'),
-                enterprise_value=info.get('enterpriseValue'),
-                trailing_pe=info.get('trailingPE'),
-                forward_pe=info.get('forwardPE'),
-                peg_ratio=info.get('pegRatio'),
-                dividend_rate=info.get('dividendRate'),
-                dividend_yield=info.get('dividendYield'),
-                payout_ratio=info.get('payoutRatio')
-            )
-            
-            return profile
-            
-        except Exception as e:
-            self.logger.error(f"Error fetching profile for {symbol}: {e}")
-            return None
+
+        # ensure we respect rate-limits before scheduling thread-work
+        self.rate_limiter.wait_if_needed()
+        return await asyncio.to_thread(_fetch_profile)
     
-    async def get_financial_statements(self, symbol: str, years: int = 5) -> Tuple[List, List, List]:
-        """Get financial statements from Yahoo Finance"""
-        try:
-            self.rate_limiter.wait_if_needed()
-            
-            ticker = yf.Ticker(symbol, session=self.session)
-            
-            # Get annual financial statements
-            income_stmt = await ticker.financials
-            balance_sheet = await ticker.balance_sheet  
-            cash_flow = await ticker.cashflow
-            
-            income_statements = []
-            balance_sheets = []
-            cash_flow_statements = []
-            
-            # Process income statements
-            if income_stmt is not None and not income_stmt.empty:
-                for col in income_stmt.columns[:years]:
-                    fiscal_year = col.year
-                    stmt = IncomeStatement(
-                        symbol=symbol,
-                        period='annual',
-                        fiscal_year=fiscal_year,
-                        report_date=col.date(),
-                        revenue=self._safe_get(income_stmt, 'Total Revenue', col),
-                        gross_profit=self._safe_get(income_stmt, 'Gross Profit', col),
-                        operating_income=self._safe_get(income_stmt, 'Operating Income', col),
-                        ebit=self._safe_get(income_stmt, 'EBIT', col),
-                        ebitda=self._safe_get(income_stmt, 'EBITDA', col),
-                        net_income=self._safe_get(income_stmt, 'Net Income', col)
-                    )
-                    income_statements.append(stmt)
-            
-            # Process balance sheets
-            if balance_sheet is not None and not balance_sheet.empty:
-                for col in balance_sheet.columns[:years]:
-                    fiscal_year = col.year
-                    bs = BalanceSheet(
-                        symbol=symbol,
-                        period='annual',
-                        fiscal_year=fiscal_year,
-                        report_date=col.date(),
-                        total_assets=self._safe_get(balance_sheet, 'Total Assets', col),
-                        current_assets=self._safe_get(balance_sheet, 'Current Assets', col),
-                        cash_and_equivalents=self._safe_get(balance_sheet, 'Cash And Cash Equivalents', col),
-                        inventory=self._safe_get(balance_sheet, 'Inventory', col),
-                        receivables=self._safe_get(balance_sheet, 'Net Receivables', col),
-                        total_liabilities=self._safe_get(balance_sheet, 'Total Liab', col),
-                        current_liabilities=self._safe_get(balance_sheet, 'Current Liabilities', col),
-                        long_term_debt=self._safe_get(balance_sheet, 'Long Term Debt', col),
-                        total_equity=self._safe_get(balance_sheet, 'Total Stockholder Equity', col)
-                    )
-                    balance_sheets.append(bs)
-            
-            # Process cash flow statements
-            if cash_flow is not None and not cash_flow.empty:
-                for col in cash_flow.columns[:years]:
-                    fiscal_year = col.year
-                    cf = CashFlowStatement(
-                        symbol=symbol,
-                        period='annual',
-                        fiscal_year=fiscal_year,
-                        report_date=col.date(),
-                        operating_cash_flow=self._safe_get(cash_flow, 'Total Cash From Operating Activities', col),
-                        investing_cash_flow=self._safe_get(cash_flow, 'Total Cashflows From Investing Activities', col),
-                        financing_cash_flow=self._safe_get(cash_flow, 'Total Cash From Financing Activities', col),
-                        capital_expenditures=self._safe_get(cash_flow, 'Capital Expenditures', col),
-                        free_cash_flow=self._calculate_free_cash_flow(cash_flow, col)
-                    )
-                    cash_flow_statements.append(cf)
-            
-            return income_statements, balance_sheets, cash_flow_statements
-            
-        except Exception as e:
-            self.logger.error(f"Error fetching financial statements for {symbol}: {e}")
-            return [], [], []
+    async def get_financial_statements(self, symbol: str, years: int = 5):
+        """Get annual financial statements asynchronously using thread pool."""
+
+        def _sync_fetch():  # noqa: C901 – uses heavy yfinance logic
+            try:
+                ticker = yf.Ticker(symbol, session=self.session)
+                income_stmt = ticker.financials  # type: ignore[attr-defined]
+                balance_sheet = ticker.balance_sheet  # type: ignore[attr-defined]
+                cash_flow = ticker.cashflow  # type: ignore[attr-defined]
+
+                income_statements, balance_sheets, cash_flow_statements = [], [], []
+
+                if income_stmt is not None and not income_stmt.empty:
+                    for col in income_stmt.columns[:years]:
+                        fiscal_year = col.year
+                        stmt = IncomeStatement(
+                            symbol=symbol,
+                            period='annual',
+                            fiscal_year=fiscal_year,
+                            report_date=col.date(),
+                            revenue=self._safe_get(income_stmt, 'Total Revenue', col),
+                            gross_profit=self._safe_get(income_stmt, 'Gross Profit', col),
+                            operating_income=self._safe_get(income_stmt, 'Operating Income', col),
+                            ebit=self._safe_get(income_stmt, 'EBIT', col),
+                            ebitda=self._safe_get(income_stmt, 'EBITDA', col),
+                            net_income=self._safe_get(income_stmt, 'Net Income', col),
+                        )
+                        income_statements.append(stmt)
+
+                if balance_sheet is not None and not balance_sheet.empty:
+                    for col in balance_sheet.columns[:years]:
+                        fiscal_year = col.year
+                        bs = BalanceSheet(
+                            symbol=symbol,
+                            period='annual',
+                            fiscal_year=fiscal_year,
+                            report_date=col.date(),
+                            total_assets=self._safe_get(balance_sheet, 'Total Assets', col),
+                            current_assets=self._safe_get(balance_sheet, 'Current Assets', col),
+                            cash_and_equivalents=self._safe_get(balance_sheet, 'Cash And Cash Equivalents', col),
+                            inventory=self._safe_get(balance_sheet, 'Inventory', col),
+                            receivables=self._safe_get(balance_sheet, 'Net Receivables', col),
+                            total_liabilities=self._safe_get(balance_sheet, 'Total Liab', col),
+                            current_liabilities=self._safe_get(balance_sheet, 'Current Liabilities', col),
+                            long_term_debt=self._safe_get(balance_sheet, 'Long Term Debt', col),
+                            total_equity=self._safe_get(balance_sheet, 'Total Stockholder Equity', col),
+                        )
+                        balance_sheets.append(bs)
+
+                if cash_flow is not None and not cash_flow.empty:
+                    for col in cash_flow.columns[:years]:
+                        fiscal_year = col.year
+                        cf = CashFlowStatement(
+                            symbol=symbol,
+                            period='annual',
+                            fiscal_year=fiscal_year,
+                            report_date=col.date(),
+                            operating_cash_flow=self._safe_get(cash_flow, 'Total Cash From Operating Activities', col),
+                            investing_cash_flow=self._safe_get(cash_flow, 'Total Cashflows From Investing Activities', col),
+                            financing_cash_flow=self._safe_get(cash_flow, 'Total Cash From Financing Activities', col),
+                            capital_expenditures=self._safe_get(cash_flow, 'Capital Expenditures', col),
+                            free_cash_flow=self._calculate_free_cash_flow(cash_flow, col),
+                        )
+                        cash_flow_statements.append(cf)
+
+                return income_statements, balance_sheets, cash_flow_statements
+            except Exception as exc:
+                self.logger.error(f"Error fetching financial statements for {symbol}: {exc}")
+                return [], [], []
+
+        self.rate_limiter.wait_if_needed()
+        return await asyncio.to_thread(_sync_fetch)
     
     async def get_market_data(self, symbol: str, start_date: date, end_date: date) -> List[MarketData]:
-        """Get historical market data"""
-        try:
-            self.rate_limiter.wait_if_needed()
-            
-            ticker = yf.Ticker(symbol, session=self.session)
-            hist = await ticker.history(start=start_date, end=end_date)
-            
-            market_data = []
-            for idx, row in hist.iterrows():
-                data = MarketData(
+        """Get historical OHLC data asynchronously (threaded)."""
+
+        def _sync_hist():
+            try:
+                ticker = yf.Ticker(symbol, session=self.session)
+                return ticker.history(start=start_date, end=end_date)  # type: ignore[attr-defined]
+            except Exception as exc:
+                self.logger.error(f"Error fetching hist for {symbol}: {exc}")
+                return None
+
+        self.rate_limiter.wait_if_needed()
+        hist = await asyncio.to_thread(_sync_hist)
+
+        market_data: List[MarketData] = []
+        if hist is None or hist.empty:
+            return market_data
+
+        for idx, row in hist.iterrows():
+            market_data.append(
+                MarketData(
                     symbol=symbol,
                     date=idx.date(),
-                    price=row['Close'],
-                    volume=int(row['Volume']) if pd.notna(row['Volume']) else None
+                    price=row["Close"],
+                    volume=int(row["Volume"]) if pd.notna(row["Volume"]) else None,
                 )
-                market_data.append(data)
-            
-            return market_data
-            
-        except Exception as e:
-            self.logger.error(f"Error fetching market data for {symbol}: {e}")
-            return []
+            )
+        return market_data
 
     async def get_quote(self, symbol: str) -> Optional[Dict]:
-        """Get the latest quote from Yahoo Finance."""
-        try:
-            self.rate_limiter.wait_if_needed()
-            ticker = yf.Ticker(symbol, session=self.session)
-            info = await ticker.info
-            if info and info.get("regularMarketPrice"):
-                return {
-                    "symbol": symbol,
-                    "price": info["regularMarketPrice"],
-                    "timestamp": datetime.now(),
-                    "provider": "YahooFinance",
-                }
+        """Fast, non-blocking latest quote via thread off-loading."""
+
+        def _sync_quote():
+            try:
+                ticker = yf.Ticker(symbol, session=self.session)
+                info = ticker.info  # type: ignore[attr-defined]
+                if info and info.get("regularMarketPrice"):
+                    return {
+                        "symbol": symbol,
+                        "price": info["regularMarketPrice"],
+                        "timestamp": datetime.now(),
+                        "provider": "YahooFinance",
+                    }
+            except Exception as exc:
+                self.logger.error(f"Error fetching quote for {symbol} from Yahoo Finance: {exc}")
             return None
-        except Exception as e:
-            self.logger.error(f"Error fetching quote for {symbol} from Yahoo Finance: {e}")
-            return None
+
+        self.rate_limiter.wait_if_needed()
+        return await asyncio.to_thread(_sync_quote)
     
     def _safe_get(self, df: pd.DataFrame, key: str, column) -> Optional[float]:
         """Safely get value from DataFrame"""
