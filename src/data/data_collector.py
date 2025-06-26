@@ -148,7 +148,7 @@ class YahooFinanceSource(DataSource):
         self.rate_limiter.wait_if_needed()
         return await asyncio.to_thread(_fetch_profile)
     
-    async def get_financial_statements(self, symbol: str, years: int = 5):
+    async def get_financial_statements(self, symbol: str, years: int = 5) -> Tuple[List, List, List]:
         """Get annual financial statements asynchronously using thread pool."""
 
         def _sync_fetch():  # noqa: C901 – uses heavy yfinance logic
@@ -328,11 +328,13 @@ class DataCollector:
             'financial_ratios': []
         }
         
-        # Get company profile
-        data['profile'] = self.yahoo_finance.get_company_profile(symbol)
+        # Run async provider calls synchronously via asyncio
+        data['profile'] = asyncio.run(self.yahoo_finance.get_company_profile(symbol))
         
         # Get financial statements
-        income_stmts, balance_sheets, cash_flows = self.yahoo_finance.get_financial_statements(symbol, years)
+        income_stmts, balance_sheets, cash_flows = asyncio.run(
+            self.yahoo_finance.get_financial_statements(symbol, years)
+        )
         data['income_statements'] = income_stmts
         data['balance_sheets'] = balance_sheets
         data['cash_flow_statements'] = cash_flows
@@ -340,7 +342,9 @@ class DataCollector:
         # Get market data (last 2 years)
         end_date = date.today()
         start_date = end_date - timedelta(days=730)
-        data['market_data'] = self.yahoo_finance.get_market_data(symbol, start_date, end_date)
+        data['market_data'] = asyncio.run(
+            self.yahoo_finance.get_market_data(symbol, start_date, end_date)
+        )
         
         # Calculate financial ratios
         data['financial_ratios'] = self._calculate_ratios(data)
