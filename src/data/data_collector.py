@@ -19,6 +19,7 @@ from models.financial_models import (
 from utils.cache_manager import CacheManager
 from utils.rate_limiter import RateLimiter
 from src.utils.http import get_client  # local import to avoid cycles
+from src.utils.async_utils import to_async
 
 class DataSource(ABC):
     """Abstract base class for data sources"""
@@ -119,8 +120,8 @@ class YahooFinanceSource(DataSource):
         try:
             self.rate_limiter.wait_if_needed()
             
-            ticker = yf.Ticker(symbol, session=self.session)
-            info = await ticker.info
+            ticker = await to_async(yf.Ticker, symbol, session=self.session)
+            info = await to_async(lambda t: t.info, ticker)
             
             if not info or 'shortName' not in info:
                 return None
@@ -156,12 +157,12 @@ class YahooFinanceSource(DataSource):
         try:
             self.rate_limiter.wait_if_needed()
             
-            ticker = yf.Ticker(symbol, session=self.session)
+            ticker = await to_async(yf.Ticker, symbol, session=self.session)
             
             # Get annual financial statements
-            income_stmt = await ticker.financials
-            balance_sheet = await ticker.balance_sheet  
-            cash_flow = await ticker.cashflow
+            income_stmt = await to_async(lambda t: t.financials, ticker)
+            balance_sheet = await to_async(lambda t: t.balance_sheet, ticker)  
+            cash_flow = await to_async(lambda t: t.cashflow, ticker)
             
             income_statements = []
             balance_sheets = []
@@ -234,8 +235,8 @@ class YahooFinanceSource(DataSource):
         try:
             self.rate_limiter.wait_if_needed()
             
-            ticker = yf.Ticker(symbol, session=self.session)
-            hist = await ticker.history(start=start_date, end=end_date)
+            ticker = await to_async(yf.Ticker, symbol, session=self.session)
+            hist = await to_async(lambda t: t.history(start=start_date, end=end_date), ticker)
             
             market_data = []
             for idx, row in hist.iterrows():
@@ -257,8 +258,8 @@ class YahooFinanceSource(DataSource):
         """Get the latest quote from Yahoo Finance."""
         try:
             self.rate_limiter.wait_if_needed()
-            ticker = yf.Ticker(symbol, session=self.session)
-            info = await ticker.info
+            ticker = await to_async(yf.Ticker, symbol, session=self.session)
+            info = await to_async(lambda t: t.info, ticker)
             if info and info.get("regularMarketPrice"):
                 return {
                     "symbol": symbol,
