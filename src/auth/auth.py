@@ -6,10 +6,12 @@ from fastapi_users.authentication import (
     CookieTransport,
     JWTStrategy,
 )
+import os
 
 from .manager import get_user_manager
 
-SECRET = "SECRET"
+# Secret key for JWT signing – set via environment variable in production
+SECRET = os.getenv("JWT_SECRET", "CHANGE_ME_SECRET")
 
 cookie_transport = CookieTransport(cookie_name="bonds", cookie_max_age=3600)
 

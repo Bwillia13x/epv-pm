@@ -83,7 +83,7 @@ jobs:
         env:
           POSTGRES_DB: epv_test
           POSTGRES_USER: epv
-          POSTGRES_PASSWORD: epvpass
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -118,7 +118,7 @@ jobs:
       - name: Start backend server
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/src
-          export DATABASE_URL=postgresql://epv:epvpass@localhost:5432/epv_test
+          export DATABASE_URL=postgresql://epv:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/epv_test
           python -m uvicorn src.api.main:app --host 0.0.0.0 --port 8000 &
           sleep 10
       - name: Start frontend server
@@ -131,4 +131,4 @@ jobs:
           export PYTHONPATH=$PYTHONPATH:$(pwd)/src
           python -m pytest -m integration --tb=short
         env:
-          DATABASE_URL: postgresql://epv:epvpass@localhost:5432/epv_test
+          DATABASE_URL: postgresql://epv:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/epv_test

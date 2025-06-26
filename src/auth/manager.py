@@ -3,13 +3,15 @@ User manager
 """
 import uuid
 from typing import Optional
+import os
 
 from fastapi import Depends, Request
 from fastapi_users import BaseUserManager, IntegerIDMixin
 
 from .db import User, get_user_db
 
-SECRET = "SECRET"
+# Secret key reused for password reset/verification tokens
+SECRET = os.getenv("JWT_SECRET", "CHANGE_ME_SECRET")
 
 class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
     reset_password_token_secret = SECRET

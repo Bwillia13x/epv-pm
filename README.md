@@ -55,6 +55,15 @@ Access the web interface at `http://127.0.0.1:8050` after starting the server.
 - All configuration settings are in `config/config.py`.
 - Set environment variables or use `.env` for sensitive information like API keys.
 
+### Required secrets
+
+| Variable | Purpose |
+|----------|---------|
+| `JWT_SECRET` | Secret key used for JWT signing/verification (backend auth). |
+| `POSTGRES_PASSWORD` | Database password used in CI and deployment workflows. |
+
+Create a `.env` file (or CI secrets) with strong random values for these variables before running in production.
+
 ## Directory Structure
 
 - **src**: Source code
