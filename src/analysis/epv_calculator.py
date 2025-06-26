@@ -8,7 +8,6 @@ from typing import Dict, List, Optional, Tuple
 from datetime import date, datetime
 import logging
 from dataclasses import asdict
-import asyncio
 
 from models.financial_models import (
     EPVCalculation, IncomeStatement, BalanceSheet, 
@@ -25,25 +24,21 @@ class EPVCalculator:
     EPV = Normalized Earnings / Cost of Capital
     """
     
-    # Simple in-process memoization cache so repeated calculations for the same
-    # symbol are served instantly.  Keyed only by symbol for benchmarking speed –
-    # extend with further inputs if accuracy across multiple time-windows is needed.
     _memo: Dict[str, "EPVCalculation"] = {}
-    _locks: Dict[str, asyncio.Lock] = {}
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.risk_free_rate = config.analysis.risk_free_rate
         self.market_risk_premium = config.analysis.market_risk_premium
         
-    async def calculate_epv(self, 
-                          symbol: str,
-                          income_statements: List[IncomeStatement],
-                          balance_sheets: List[BalanceSheet],
-                          cash_flow_statements: List[CashFlowStatement],
-                          financial_ratios: List[FinancialRatios],
-                          current_price: Optional[float] = None,
-                          company_profile: Optional[CompanyProfile] = None) -> EPVCalculation:
+    def calculate_epv(self, 
+                     symbol: str,
+                     income_statements: List[IncomeStatement],
+                     balance_sheets: List[BalanceSheet],
+                     cash_flow_statements: List[CashFlowStatement],
+                     financial_ratios: List[FinancialRatios],
+                     current_price: Optional[float] = None,
+                     company_profile: Optional[CompanyProfile] = None) -> EPVCalculation:
         """
         Calculate Earnings Power Value for a company
         
@@ -64,39 +59,27 @@ class EPVCalculator:
         if symbol in self._memo:
             return self._memo[symbol]
 
-        # Ensure only one coroutine computes EPV per symbol
-        lock = self._locks.setdefault(symbol, asyncio.Lock())
-        async def _compute() -> EPVCalculation:  # inner coroutine for clarity
-            # Double-check after acquiring lock
-            if symbol in self._memo:
-                return self._memo[symbol]
-            result = await self._calculate_epv_impl(
-                symbol, income_statements, balance_sheets, cash_flow_statements,
-                financial_ratios, current_price, company_profile
-            )
-            self._memo[symbol] = result
-            return result
-
-        if lock.locked():
-            # Wait for the ongoing computation
-            async with lock:
-                return self._memo[symbol]
-
-        async with lock:
-            return await _compute()
+        self.logger.info(f"Calculating EPV for {symbol}")
+        epv_calculation = self._calculate_epv_impl(
+            symbol, income_statements, balance_sheets, cash_flow_statements,
+            financial_ratios, current_price, company_profile
+        )
+        # Store in memo cache
+        self._memo[symbol] = epv_calculation
+        return epv_calculation
 
     # ------------------------------------------------------------------
     # The original heavy calculation moved to a private helper so that we
     # can call it synchronously or asynchronously as needed.
     # ------------------------------------------------------------------
-    async def _calculate_epv_impl(self,
-                                  symbol: str,
-                                  income_statements: List[IncomeStatement],
-                                  balance_sheets: List[BalanceSheet],
-                                  cash_flow_statements: List[CashFlowStatement],
-                                  financial_ratios: List[FinancialRatios],
-                                  current_price: Optional[float] = None,
-                                  company_profile: Optional[CompanyProfile] = None) -> EPVCalculation:
+    def _calculate_epv_impl(self,
+                          symbol: str,
+                          income_statements: List[IncomeStatement],
+                          balance_sheets: List[BalanceSheet],
+                          cash_flow_statements: List[CashFlowStatement],
+                          financial_ratios: List[FinancialRatios],
+                          current_price: Optional[float] = None,
+                          company_profile: Optional[CompanyProfile] = None) -> EPVCalculation:
         """Original implementation extracted from calculate_epv for re-use."""
         # (The body will be placed below automatically)
 
