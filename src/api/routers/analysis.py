@@ -78,7 +78,7 @@ async def analyze_stock(symbol: str, request: AnalysisRequest):
             "cost_of_capital": epv_result.cost_of_capital,
             "margin_of_safety": epv_result.margin_of_safety,
             "quality_score": epv_result.quality_score,
-            "risk_score": epv_result.risk_score,
+            "risk_score": getattr(epv_result, "risk_score", None),
             "investment_thesis": epv_result.investment_thesis if request.analysis_type == "full" else None,
             "risk_factors": epv_result.risk_factors if request.analysis_type == "full" else None,
         }
@@ -160,7 +160,7 @@ async def batch_analysis(request: BatchAnalysisRequest):
                         "epv_per_share": epv_result.epv_per_share,
                         "margin_of_safety": epv_result.margin_of_safety,
                         "quality_score": epv_result.quality_score,
-                        "risk_score": epv_result.risk_score,
+                        "risk_score": getattr(epv_result, "risk_score", None),
                         "recommendation": "BUY" if epv_result.margin_of_safety > 0.2 else "HOLD" if epv_result.margin_of_safety > 0 else "SELL"
                     }
                     

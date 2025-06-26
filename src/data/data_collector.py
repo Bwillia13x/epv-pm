@@ -320,16 +320,18 @@ class DataCollector:
         data = {
             'symbol': symbol,
             'collection_date': datetime.now(),
-            'profile': None,
+            'company_profile': None,
             'income_statements': [],
             'balance_sheets': [],
             'cash_flow_statements': [],
             'market_data': [],
-            'financial_ratios': []
+            'financial_ratios': [],
+            'current_price': None,
+            'market_cap': None,
         }
         
         # Run async provider calls synchronously via asyncio
-        data['profile'] = asyncio.run(self.yahoo_finance.get_company_profile(symbol))
+        data['company_profile'] = asyncio.run(self.yahoo_finance.get_company_profile(symbol))
         
         # Get financial statements
         income_stmts, balance_sheets, cash_flows = asyncio.run(
@@ -345,6 +347,10 @@ class DataCollector:
         data['market_data'] = asyncio.run(
             self.yahoo_finance.get_market_data(symbol, start_date, end_date)
         )
+        
+        # Set current price if historical data present
+        if data['market_data']:
+            data['current_price'] = data['market_data'][-1].price
         
         # Calculate financial ratios
         data['financial_ratios'] = self._calculate_ratios(data)
@@ -425,3 +431,9 @@ class DataCollector:
                 self.logger.error(f"Error collecting peer data for {peer_symbol}: {e}")
         
         return comparison_data
+
+    # Backwards-compat alias used by API layer
+    def collect_comprehensive_data(self, symbol: str, years: int = 10):  # noqa: D401
+        """Alias wrapper for legacy API – delegates to collect_company_data."""
+        import types
+        return types.SimpleNamespace(**self.collect_company_data(symbol, years))

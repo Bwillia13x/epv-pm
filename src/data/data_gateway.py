@@ -6,8 +6,8 @@ from typing import Optional, List, Dict
 from datetime import datetime, timedelta
 
 from .data_collector import DataSource, YahooFinanceSource, AlphaVantageSource, FredSource
-from ..utils.cache_manager import CacheManager
-from ..api.settings import settings
+from utils.cache_manager import CacheManager
+from api.settings import settings
 
 class DataGateway:
     """
