@@ -415,21 +415,19 @@ class ProfessionalReportGenerator:
         if research_report.profile:
             profile = research_report.profile
             
-            overview_text = f"""
-            <b>Business Description:</b><br/>
-            {profile.description or 'Business description not available.'}<br/><br/>
-            
-            <b>Industry & Sector:</b><br/>
-            • Sector: {profile.sector or 'N/A'}<br/>
-            • Industry: {profile.industry or 'N/A'}<br/>
-            • Country: {profile.country or 'N/A'}<br/>
-            • Exchange: {profile.exchange or 'N/A'}<br/><br/>
-            
-            <b>Key Metrics:</b><br/>
-            • Market Cap: ${profile.market_cap:,.0f}" if profile.market_cap else "N/A"}<br/>
-            • Enterprise Value: ${profile.enterprise_value:,.0f}" if profile.enterprise_value else "N/A"}<br/>
-            • Employees: {profile.employees:,}" if profile.employees else "N/A"}<br/>
-            """
+            overview_text = (
+                "<b>Business Description:</b><br/>"
+                f"{profile.description or 'Business description not available.'}<br/><br/>"
+                "<b>Industry & Sector:</b><br/>"
+                f"• Sector: {profile.sector or 'N/A'}<br/>"
+                f"• Industry: {profile.industry or 'N/A'}<br/>"
+                f"• Country: {profile.country or 'N/A'}<br/>"
+                f"• Exchange: {profile.exchange or 'N/A'}<br/><br/>"
+                "<b>Key Metrics:</b><br/>"
+                f"• Market Cap: {f'${profile.market_cap:,.0f}' if profile.market_cap else 'N/A'}<br/>"
+                f"• Enterprise Value: {f'${profile.enterprise_value:,.0f}' if profile.enterprise_value else 'N/A'}<br/>"
+                f"• Employees: {f'{profile.employees:,}' if profile.employees else 'N/A'}<br/>"
+            )
             
             story.append(Paragraph(overview_text, body_style))
         
@@ -820,12 +818,19 @@ class ProfessionalReportGenerator:
         
         story.append(Paragraph("Recommendation", header_style))
         
-        recommendation_text = f"""
-        <b>Recommendation:</b> {research_report.recommendation or 'N/A'}<br/>
-        <b>Target Price:</b> ${research_report.target_price:.2f}" if research_report.target_price else "N/A"}<br/>
-        <b>Confidence Level:</b> {research_report.confidence_level:.0%}" if research_report.confidence_level else "N/A"}
-        """
-        
+        target_price_str = (
+            f"${research_report.target_price:.2f}" if research_report.target_price else "N/A"
+        )
+        confidence_str = (
+            f"{research_report.confidence_level:.0%}" if research_report.confidence_level else "N/A"
+        )
+
+        recommendation_text = (
+            f"<b>Recommendation:</b> {research_report.recommendation or 'N/A'}<br/>"
+            f"<b>Target Price:</b> {target_price_str}<br/>"
+            f"<b>Confidence Level:</b> {confidence_str}"
+        )
+
         story.append(Paragraph(recommendation_text, body_style))
         
         return story

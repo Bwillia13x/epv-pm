@@ -7,7 +7,13 @@ import asyncio
 import random
 import string
 import time
-from playwright.sync_api import sync_playwright
+
+# Optional dependency guard
+try:
+    from playwright.sync_api import sync_playwright  # type: ignore
+except ImportError:  # pragma: no cover
+    sync_playwright = None  # type: ignore
+    pytest.skip("Playwright not installed", allow_module_level=True)
 from typing import Dict, Optional
 
 
