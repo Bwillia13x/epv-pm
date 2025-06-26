@@ -53,7 +53,7 @@ Access the web interface at `http://127.0.0.1:8050` after starting the server.
 ## Configuration
 
 - All configuration settings are in `config/config.py`.
-- Set environment variables or use `.env` for sensitive information like API keys.
+- Set environment variables or use `.env` for sensitive information like API keys and authentication secrets (e.g., `JWT_SECRET`).
 
 ## Directory Structure
 

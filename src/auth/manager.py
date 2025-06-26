@@ -2,6 +2,7 @@
 User manager
 """
 import uuid
+import os
 from typing import Optional
 
 from fastapi import Depends, Request
@@ -9,7 +10,8 @@ from fastapi_users import BaseUserManager, IntegerIDMixin
 
 from .db import User, get_user_db
 
-SECRET = "SECRET"
+# Use the same JWT secret as auth.auth; fallback to placeholder for development.
+SECRET = os.getenv("JWT_SECRET", "change_me")
 
 class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
     reset_password_token_secret = SECRET
