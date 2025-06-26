@@ -86,3 +86,14 @@ This document describes how to deploy the EPV Research Platform to AWS ECS.
     ```bash
     aws ecs create-service --cluster epv-cluster --service-name epv-service --task-definition epv-task --desired-count 1
     ```
+
+### Environment Variables
+
+The application relies on runtime secrets that **must** be passed via your container orchestrator (ECS task definition, Secrets Manager, or `.env` file).  Provide at minimum:
+
+* `JWT_SECRET` – cryptographically random string used for signing authentication tokens (required).
+* `ALPHA_VANTAGE_API_KEY` – Alpha Vantage data-provider key (optional).
+* `FRED_API_KEY` – St. Louis Fed data-provider key (optional).
+* `QUANDL_API_KEY` – Nasdaq Data Link (Quandl) key (optional).
+
+If provider keys are omitted the platform will still start, but external data coverage is limited to publicly available endpoints.
