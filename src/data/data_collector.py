@@ -294,7 +294,7 @@ class YahooFinanceSource(DataSource):
             return None
 
 class DataCollector:
-    """Main data collection orchestrator"""
+    """Main data collection orchestrator – now supports fully async collection."""
     
     def __init__(self, cache_manager: Optional[CacheManager] = None):
         self.cache_manager = cache_manager or CacheManager()
@@ -305,19 +305,21 @@ class DataCollector:
         
         self.logger = logging.getLogger(__name__)
     
-    def collect_company_data(self, symbol: str, years: int = 10) -> Dict:
-        """Collect comprehensive company data"""
-        self.logger.info(f"Collecting data for {symbol}")
-        
-        # Check cache first
+    # ---------------------------------------------------------------------
+    # Public async API
+    # ---------------------------------------------------------------------
+    async def collect_company_data_async(self, symbol: str, years: int = 10) -> Dict:
+        """Async version of `collect_company_data` – non-blocking end-to-end."""
+
+        self.logger.info(f"Collecting data for {symbol} (async)")
+
         cache_key = f"company_data_{symbol}_{years}y"
         cached_data = self.cache_manager.get(cache_key)
         if cached_data:
-            self.logger.info(f"Using cached data for {symbol}")
+            self.logger.info(f"Using cached data for {symbol} (cache hit)")
             return cached_data
-        
-        # Collect data from sources
-        data = {
+
+        data: Dict = {
             'symbol': symbol,
             'collection_date': datetime.now(),
             'company_profile': None,
@@ -329,38 +331,58 @@ class DataCollector:
             'current_price': None,
             'market_cap': None,
         }
-        
-        # Run async provider calls synchronously via asyncio
-        data['company_profile'] = asyncio.run(self.yahoo_finance.get_company_profile(symbol))
-        
-        # Get financial statements
-        income_stmts, balance_sheets, cash_flows = asyncio.run(
-            self.yahoo_finance.get_financial_statements(symbol, years)
-        )
+
+        # Gather async provider requests concurrently for best latency
+        profile_task = asyncio.create_task(self.yahoo_finance.get_company_profile(symbol))
+        financials_task = asyncio.create_task(self.yahoo_finance.get_financial_statements(symbol, years))
+
+        # Market data (last 2y) – can run in parallel as well
+        end_date = date.today()
+        start_date = end_date - timedelta(days=730)
+        market_task = asyncio.create_task(self.yahoo_finance.get_market_data(symbol, start_date, end_date))
+
+        # Await all
+        data['company_profile'] = await profile_task
+        income_stmts, balance_sheets, cash_flows = await financials_task
         data['income_statements'] = income_stmts
         data['balance_sheets'] = balance_sheets
         data['cash_flow_statements'] = cash_flows
-        
-        # Get market data (last 2 years)
-        end_date = date.today()
-        start_date = end_date - timedelta(days=730)
-        data['market_data'] = asyncio.run(
-            self.yahoo_finance.get_market_data(symbol, start_date, end_date)
-        )
-        
-        # Set current price if historical data present
+
+        data['market_data'] = await market_task
+
+        # Current price from latest market data
         if data['market_data']:
             data['current_price'] = data['market_data'][-1].price
-        
-        # Calculate financial ratios
+
+        # Calculate financial ratios synchronously (CPU-bound)
         data['financial_ratios'] = self._calculate_ratios(data)
-        
-        # Cache the results
+
+        # Cache
         self.cache_manager.set(cache_key, data)
-        
-        self.logger.info(f"Data collection complete for {symbol}")
+        self.logger.info(f"Data collection complete for {symbol} (async)")
         return data
-    
+
+    # ---------------------------------------------------------------------
+    # Legacy synchronous wrappers (keep API compatibility)
+    # ---------------------------------------------------------------------
+    def collect_company_data(self, symbol: str, years: int = 10) -> Dict:  # noqa: D401
+        """Synchronous wrapper for code paths still expecting blocking call."""
+        return asyncio.run(self.collect_company_data_async(symbol, years))
+
+    # ---------------------------------------------------------------------
+    # Convenience aliases
+    # ---------------------------------------------------------------------
+    async def collect_comprehensive_data_async(self, symbol: str, years: int = 10):
+        """Async alias returning SimpleNamespace like the legacy sync variant."""
+        import types
+        result = await self.collect_company_data_async(symbol, years)
+        return types.SimpleNamespace(**result)
+
+    def collect_comprehensive_data(self, symbol: str, years: int = 10):  # type: ignore[override]
+        """Synchronous alias maintained for backward compatibility."""
+        import types
+        return types.SimpleNamespace(**self.collect_company_data(symbol, years))
+
     def _calculate_ratios(self, data: Dict) -> List[FinancialRatios]:
         """Calculate financial ratios from collected data"""
         ratios = []
@@ -431,9 +453,3 @@ class DataCollector:
                 self.logger.error(f"Error collecting peer data for {peer_symbol}: {e}")
         
         return comparison_data
-
-    # Backwards-compat alias used by API layer
-    def collect_comprehensive_data(self, symbol: str, years: int = 10):  # noqa: D401
-        """Alias wrapper for legacy API – delegates to collect_company_data."""
-        import types
-        return types.SimpleNamespace(**self.collect_company_data(symbol, years))
