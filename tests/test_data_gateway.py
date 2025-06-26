@@ -27,12 +27,16 @@ class MockDataSource(DataSource):
     async def get_financial_statements(self, symbol: str, years: int = 5) -> Tuple[List, List, List]:
         if self.should_fail:
             raise Exception("API Error")
-        return [IncomeStatement(symbol=symbol)], [BalanceSheet(symbol=symbol)], [CashFlowStatement(symbol=symbol)]
+        # Provide bare-minimum required fields for dataclasses
+        income = IncomeStatement(symbol, "annual", 2023, net_income=1.0, revenue=10.0)
+        balance = BalanceSheet(symbol, "annual", 2023)
+        cashflow = CashFlowStatement(symbol, "annual", 2023)
+        return [income], [balance], [cashflow]
 
     async def get_market_data(self, symbol: str, start_date: date, end_date: date) -> List[MarketData]:
         if self.should_fail:
             raise Exception("API Error")
-        return [MarketData(symbol=symbol, date=date.today(), price=100.0)]
+        return [MarketData(symbol, date.today(), price=100.0)]
 
     def _get_insider_transactions(self):
         pass
