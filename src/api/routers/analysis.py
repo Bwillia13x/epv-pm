@@ -7,6 +7,7 @@ from typing import List, Optional, Any
 import logging
 import asyncio
 from datetime import datetime
+from concurrent.futures import ProcessPoolExecutor
 
 from analysis.epv_calculator import EPVCalculator
 from analysis.research_generator import ResearchGenerator
@@ -25,6 +26,25 @@ data_gateway = DataGateway()
 epv_calculator = EPVCalculator()
 research_generator = ResearchGenerator()
 portfolio_manager = PortfolioManager()
+
+# ---------------------------------------------------------------------------
+# CPU-bound EPV calculations off-loaded to a small process-pool so that the
+# event-loop stays responsive while leveraging multiple cores.
+# ---------------------------------------------------------------------------
+_EPV_EXECUTOR: ProcessPoolExecutor = ProcessPoolExecutor(max_workers=4)
+
+def _compute_epv_sync(symbol: str, data: Any) -> Any:  # type: ignore[valid-type]
+    """Blocking helper executed in process pool – instantiates local EPVCalculator."""
+    calc = EPVCalculator()
+    return calc.calculate_epv(
+        symbol=symbol,
+        income_statements=getattr(data, "income_statements", []),  # type: ignore[attr-defined]
+        balance_sheets=getattr(data, "balance_sheets", []),  # type: ignore[attr-defined]
+        cash_flow_statements=getattr(data, "cash_flow_statements", []),  # type: ignore[attr-defined]
+        financial_ratios=getattr(data, "financial_ratios", []),  # type: ignore[attr-defined]
+        current_price=getattr(data, "current_price", None),  # type: ignore[attr-defined]
+        company_profile=getattr(data, "company_profile", None),  # type: ignore[attr-defined]
+    )
 
 class AnalysisRequest(BaseModel):
     symbol: str
@@ -57,15 +77,8 @@ async def analyze_stock(symbol: str, request: AnalysisRequest):
             raise HTTPException(status_code=404, detail=f"No data found for symbol {symbol}")
         
         # Calculate EPV
-        epv_result = epv_calculator.calculate_epv(
-            symbol=symbol,
-            income_statements=data.income_statements,
-            balance_sheets=data.balance_sheets,
-            cash_flow_statements=data.cash_flow_statements,
-            financial_ratios=data.financial_ratios,
-            current_price=data.current_price,
-            company_profile=data.company_profile
-        )
+        loop = asyncio.get_running_loop()
+        epv_result = await loop.run_in_executor(_EPV_EXECUTOR, _compute_epv_sync, symbol, data)
         
         result = {
             "symbol": symbol,
@@ -98,15 +111,8 @@ async def analyze_stock(symbol: str, request: AnalysisRequest):
                     continue
 
                 try:
-                    peer_epv = epv_calculator.calculate_epv(
-                        symbol=peer_symbol,
-                        income_statements=getattr(peer_data, "income_statements", []),  # type: ignore[attr-defined]
-                        balance_sheets=getattr(peer_data, "balance_sheets", []),  # type: ignore[attr-defined]
-                        cash_flow_statements=getattr(peer_data, "cash_flow_statements", []),  # type: ignore[attr-defined]
-                        financial_ratios=getattr(peer_data, "financial_ratios", []),  # type: ignore[attr-defined]
-                        current_price=getattr(peer_data, "current_price", None),  # type: ignore[attr-defined]
-                        company_profile=getattr(peer_data, "company_profile", None)  # type: ignore[attr-defined]
-                    )
+                    loop = asyncio.get_running_loop()
+                    peer_epv = await loop.run_in_executor(_EPV_EXECUTOR, _compute_epv_sync, peer_symbol, peer_data)
                     peer_analysis.append({
                         "symbol": peer_symbol,
                         "epv_per_share": peer_epv.epv_per_share,
@@ -148,15 +154,8 @@ async def batch_analysis(request: BatchAnalysisRequest):
                 data = await data_collector.collect_comprehensive_data_async(symbol, request.years)
                 
                 if data:
-                    epv_result = epv_calculator.calculate_epv(
-                        symbol=symbol,
-                        income_statements=data.income_statements,
-                        balance_sheets=data.balance_sheets,
-                        cash_flow_statements=data.cash_flow_statements,
-                        financial_ratios=data.financial_ratios,
-                        current_price=data.current_price,
-                        company_profile=data.company_profile
-                    )
+                    loop = asyncio.get_running_loop()
+                    epv_result = await loop.run_in_executor(_EPV_EXECUTOR, _compute_epv_sync, symbol, data)
                     
                     result = {
                         "symbol": symbol,

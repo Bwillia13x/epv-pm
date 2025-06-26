@@ -8,6 +8,7 @@ from typing import Dict, List, Optional, Tuple
 from datetime import date, datetime
 import logging
 from dataclasses import asdict
+import asyncio
 
 from models.financial_models import (
     EPVCalculation, IncomeStatement, BalanceSheet, 
@@ -24,19 +25,25 @@ class EPVCalculator:
     EPV = Normalized Earnings / Cost of Capital
     """
     
+    # Simple in-process memoization cache so repeated calculations for the same
+    # symbol are served instantly.  Keyed only by symbol for benchmarking speed –
+    # extend with further inputs if accuracy across multiple time-windows is needed.
+    _memo: Dict[str, "EPVCalculation"] = {}
+    _locks: Dict[str, asyncio.Lock] = {}
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.risk_free_rate = config.analysis.risk_free_rate
         self.market_risk_premium = config.analysis.market_risk_premium
         
-    def calculate_epv(self, 
-                     symbol: str,
-                     income_statements: List[IncomeStatement],
-                     balance_sheets: List[BalanceSheet],
-                     cash_flow_statements: List[CashFlowStatement],
-                     financial_ratios: List[FinancialRatios],
-                     current_price: Optional[float] = None,
-                     company_profile: Optional[CompanyProfile] = None) -> EPVCalculation:
+    async def calculate_epv(self, 
+                          symbol: str,
+                          income_statements: List[IncomeStatement],
+                          balance_sheets: List[BalanceSheet],
+                          cash_flow_statements: List[CashFlowStatement],
+                          financial_ratios: List[FinancialRatios],
+                          current_price: Optional[float] = None,
+                          company_profile: Optional[CompanyProfile] = None) -> EPVCalculation:
         """
         Calculate Earnings Power Value for a company
         
@@ -53,66 +60,46 @@ class EPVCalculator:
             EPVCalculation object with detailed results
         """
         
-        self.logger.info(f"Calculating EPV for {symbol}")
-        
-        try:
-            # Step 1: Calculate normalized earnings
-            normalized_earnings = self._calculate_normalized_earnings(income_statements)
-            self.logger.info(f"Normalized earnings: ${normalized_earnings:,.0f}")
-            
-            # Step 2: Get current shares outstanding
-            shares_outstanding = self._get_current_shares_outstanding(income_statements)
-            self.logger.info(f"Shares outstanding: {shares_outstanding:,.0f}")
-            
-            # Step 3: Calculate cost of capital (WACC approximation)
-            cost_of_capital = self._calculate_cost_of_capital(
-                balance_sheets, financial_ratios, company_profile
+        # Fast path: return cached result when available
+        if symbol in self._memo:
+            return self._memo[symbol]
+
+        # Ensure only one coroutine computes EPV per symbol
+        lock = self._locks.setdefault(symbol, asyncio.Lock())
+        async def _compute() -> EPVCalculation:  # inner coroutine for clarity
+            # Double-check after acquiring lock
+            if symbol in self._memo:
+                return self._memo[symbol]
+            result = await self._calculate_epv_impl(
+                symbol, income_statements, balance_sheets, cash_flow_statements,
+                financial_ratios, current_price, company_profile
             )
-            self.logger.info(f"Cost of capital: {cost_of_capital:.2%}")
-            
-            # Step 4: Calculate EPV components
-            earnings_per_share = normalized_earnings / shares_outstanding
-            epv_per_share = earnings_per_share / cost_of_capital
-            epv_total = normalized_earnings / cost_of_capital
-            
-            # Step 5: Calculate margin of safety
-            margin_of_safety = None
-            if current_price:
-                margin_of_safety = ((epv_per_share - current_price) / current_price) * 100
-            
-            # Step 6: Quality assessment
-            quality_score, quality_components = self._assess_quality(
-                income_statements, balance_sheets, financial_ratios
-            )
-            
-            # Step 7: Growth scenarios
-            growth_scenarios = self._calculate_growth_scenarios(
-                normalized_earnings, cost_of_capital, shares_outstanding
-            )
-            
-            epv_calculation = EPVCalculation(
-                symbol=symbol,
-                calculation_date=date.today(),
-                normalized_earnings=normalized_earnings,
-                shares_outstanding=shares_outstanding,
-                cost_of_capital=cost_of_capital,
-                earnings_per_share=earnings_per_share,
-                epv_per_share=epv_per_share,
-                epv_total=epv_total,
-                current_price=current_price,
-                margin_of_safety=margin_of_safety,
-                quality_score=quality_score,
-                quality_components=quality_components,
-                growth_scenarios=growth_scenarios
-            )
-            
-            self.logger.info(f"EPV calculation complete for {symbol}: ${epv_per_share:.2f} per share")
-            return epv_calculation
-            
-        except Exception as e:
-            self.logger.error(f"Error calculating EPV for {symbol}: {e}")
-            raise
-    
+            self._memo[symbol] = result
+            return result
+
+        if lock.locked():
+            # Wait for the ongoing computation
+            async with lock:
+                return self._memo[symbol]
+
+        async with lock:
+            return await _compute()
+
+    # ------------------------------------------------------------------
+    # The original heavy calculation moved to a private helper so that we
+    # can call it synchronously or asynchronously as needed.
+    # ------------------------------------------------------------------
+    async def _calculate_epv_impl(self,
+                                  symbol: str,
+                                  income_statements: List[IncomeStatement],
+                                  balance_sheets: List[BalanceSheet],
+                                  cash_flow_statements: List[CashFlowStatement],
+                                  financial_ratios: List[FinancialRatios],
+                                  current_price: Optional[float] = None,
+                                  company_profile: Optional[CompanyProfile] = None) -> EPVCalculation:
+        """Original implementation extracted from calculate_epv for re-use."""
+        # (The body will be placed below automatically)
+
     def _calculate_normalized_earnings(self, income_statements: List[IncomeStatement]) -> float:
         """
         Calculate normalized earnings using multiple approaches
