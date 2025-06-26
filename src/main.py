@@ -255,18 +255,131 @@ class EPVResearchPlatform:
         """Clear all cached data"""
         return self.cache_manager.clear_all()
 
+def _handle_analyze(platform: EPVResearchPlatform, args: argparse.Namespace):
+    """Handles the 'analyze' command"""
+    if not args.symbol:
+        print("Error: --symbol required for analyze command")
+        return 1
+    
+    results = platform.analyze_stock(
+        symbol=args.symbol,
+        peer_symbols=args.peers,
+        years=args.years,
+        export_format=args.export
+    )
+    
+    # Print summary
+    print(f"\n=== EPV Analysis Results for {results['symbol']} ===")
+    print(f"Company: {results['company_name']}")
+    print(f"EPV per share: ${results['epv_per_share']:.2f}")
+    if results['current_price']:
+        print(f"Current price: ${results['current_price']:.2f}")
+    if results['margin_of_safety'] is not None:
+        print(f"Margin of safety: {results['margin_of_safety']:.1f}%")
+    print(f"Quality score: {results['quality_score']:.2f}")
+    print(f"Risk score: {results['risk_score']:.2f}")
+    print(f"Recommendation: {results['recommendation']}")
+    if results['target_price']:
+        print(f"Target price: ${results['target_price']:.2f}")
+    print(f"Confidence: {results['confidence_level']:.0%}")
+    print(f"\nInvestment Thesis:\n{results['investment_thesis']}")
+    return 0
+
+def _handle_quick(platform: EPVResearchPlatform, args: argparse.Namespace):
+    """Handles the 'quick' command"""
+    if not args.symbol:
+        print("Error: --symbol required for quick command")
+        return 1
+    
+    results = platform.quick_epv(args.symbol)
+    print(f"\n=== Quick EPV for {results['symbol']} ===")
+    print(f"EPV per share: ${results['epv_per_share']:.2f}")
+    if results['current_price']:
+        print(f"Current price: ${results['current_price']:.2f}")
+    if results['margin_of_safety'] is not None:
+        print(f"Margin of safety: {results['margin_of_safety']:.1f}%")
+    print(f"Quality score: {results['quality_score']:.2f}")
+    return 0
+
+def _handle_batch(platform: EPVResearchPlatform, args: argparse.Namespace):
+    """Handles the 'batch' command"""
+    if not args.symbols:
+        print("Error: --symbols required for batch command")
+        return 1
+    
+    results = platform.batch_analysis(args.symbols)
+    print(f"\n=== Batch Analysis Results ===")
+    print(f"Analyzed: {len(args.symbols)} symbols")
+    print(f"Successful: {results['successful_analyses']}")
+    print(f"Failed: {results['failed_analyses']}")
+    
+    if results['summary_stats']:
+        stats = results['summary_stats']
+        print(f"\nSummary Statistics:")
+        print(f"Average EPV: ${stats['avg_epv']:.2f}")
+        print(f"Average Quality: {stats['avg_quality']:.2f}")
+        print(f"Average Margin of Safety: {stats['avg_margin_of_safety']:.1f}%")
+        print(f"Undervalued stocks: {stats['undervalued_count']}")
+        print(f"High quality stocks: {stats['high_quality_count']}")
+    return 0
+
+def _handle_cache_stats(platform: EPVResearchPlatform, args: argparse.Namespace):
+    """Handles the 'cache-stats' command"""
+    stats = platform.get_cache_stats()
+    print(f"\n=== Cache Statistics ===")
+    print(f"Total entries: {stats['total_entries']}")
+    print(f"Total size: {stats['total_size_bytes']:,} bytes")
+    print(f"Expired entries: {stats['expired_entries']}")
+    return 0
+
+def _handle_clear_cache(platform: EPVResearchPlatform, args: argparse.Namespace):
+    """Handles the 'clear-cache' command"""
+    cleared = platform.clear_cache()
+    print(f"Cleared {cleared} cache entries")
+    return 0
+
+def _handle_web(platform: EPVResearchPlatform, args: argparse.Namespace):
+    """Handles the 'web' command"""
+    print(f"Starting web interface on port {args.port}...")
+    from ui.web_app import create_app
+    app = create_app(platform)
+    app.run(host="127.0.0.1", port=args.port, debug=True)
+    return 0
+
+def _handle_api(platform: EPVResearchPlatform, args: argparse.Namespace):
+    """Handles the 'api' command"""
+    print(f"Starting API server on port {args.port}...")
+    import uvicorn
+    uvicorn.run("api.main:app", host="0.0.0.0", port=args.port, reload=True)
+    return 0
+
 def main():
     """Main command-line interface"""
     parser = argparse.ArgumentParser(description="EPV Research Platform")
-    parser.add_argument("command", choices=["analyze", "quick", "batch", "cache-stats", "clear-cache", "web", "api"],
-                       help="Command to execute")
-    parser.add_argument("--symbol", "-s", help="Stock symbol to analyze")
-    parser.add_argument("--symbols", nargs="+", help="Multiple stock symbols for batch analysis")
-    parser.add_argument("--peers", nargs="*", help="Peer company symbols for comparison")
-    parser.add_argument("--years", "-y", type=int, default=10, help="Years of historical data")
-    parser.add_argument("--export", "-e", choices=["json", "csv"], help="Export format")
-    parser.add_argument("--port", "-p", type=int, default=8050, help="Port for web interface")
     
+    command_parsers = parser.add_subparsers(dest="command", required=True)
+    
+    analyze_parser = command_parsers.add_parser("analyze", help="Perform comprehensive analysis of a stock")
+    analyze_parser.add_argument("--symbol", "-s", required=True, help="Stock symbol to analyze")
+    analyze_parser.add_argument("--peers", nargs="*", help="Peer company symbols for comparison")
+    analyze_parser.add_argument("--years", "-y", type=int, default=10, help="Years of historical data")
+    analyze_parser.add_argument("--export", "-e", choices=["json", "csv"], help="Export format")
+
+    quick_parser = command_parsers.add_parser("quick", help="Quick EPV calculation")
+    quick_parser.add_argument("--symbol", "-s", required=True, help="Stock symbol to analyze")
+
+    batch_parser = command_parsers.add_parser("batch", help="Perform batch analysis on multiple stocks")
+    batch_parser.add_argument("--symbols", nargs="+", required=True, help="Multiple stock symbols for batch analysis")
+
+    command_parsers.add_parser("cache-stats", help="Get cache statistics")
+    command_parsers.add_parser("clear-cache", help="Clear all cached data")
+
+    web_parser = command_parsers.add_parser("web", help="Start the web interface")
+    web_parser.add_argument("--port", "-p", type=int, default=8050, help="Port for web interface")
+
+    api_parser = command_parsers.add_parser("api", help="Start the API server")
+    api_parser.add_argument("--port", "-p", type=int, default=8080, help="Port for API server")
+
     args = parser.parse_args()
     
     # Setup
@@ -275,93 +388,23 @@ def main():
     
     platform = EPVResearchPlatform()
     
+    handlers = {
+        "analyze": _handle_analyze,
+        "quick": _handle_quick,
+        "batch": _handle_batch,
+        "cache-stats": _handle_cache_stats,
+        "clear-cache": _handle_clear_cache,
+        "web": _handle_web,
+        "api": _handle_api,
+    }
+
     try:
-        if args.command == "analyze":
-            if not args.symbol:
-                print("Error: --symbol required for analyze command")
-                return 1
-            
-            results = platform.analyze_stock(
-                symbol=args.symbol,
-                peer_symbols=args.peers,
-                years=args.years,
-                export_format=args.export
-            )
-            
-            # Print summary
-            print(f"\n=== EPV Analysis Results for {results['symbol']} ===")
-            print(f"Company: {results['company_name']}")
-            print(f"EPV per share: ${results['epv_per_share']:.2f}")
-            if results['current_price']:
-                print(f"Current price: ${results['current_price']:.2f}")
-            if results['margin_of_safety'] is not None:
-                print(f"Margin of safety: {results['margin_of_safety']:.1f}%")
-            print(f"Quality score: {results['quality_score']:.2f}")
-            print(f"Risk score: {results['risk_score']:.2f}")
-            print(f"Recommendation: {results['recommendation']}")
-            if results['target_price']:
-                print(f"Target price: ${results['target_price']:.2f}")
-            print(f"Confidence: {results['confidence_level']:.0%}")
-            print(f"\nInvestment Thesis:\n{results['investment_thesis']}")
-            
-        elif args.command == "quick":
-            if not args.symbol:
-                print("Error: --symbol required for quick command")
-                return 1
-            
-            results = platform.quick_epv(args.symbol)
-            print(f"\n=== Quick EPV for {results['symbol']} ===")
-            print(f"EPV per share: ${results['epv_per_share']:.2f}")
-            if results['current_price']:
-                print(f"Current price: ${results['current_price']:.2f}")
-            if results['margin_of_safety'] is not None:
-                print(f"Margin of safety: {results['margin_of_safety']:.1f}%")
-            print(f"Quality score: {results['quality_score']:.2f}")
-            
-        elif args.command == "batch":
-            if not args.symbols:
-                print("Error: --symbols required for batch command")
-                return 1
-            
-            results = platform.batch_analysis(args.symbols)
-            print(f"\n=== Batch Analysis Results ===")
-            print(f"Analyzed: {len(args.symbols)} symbols")
-            print(f"Successful: {results['successful_analyses']}")
-            print(f"Failed: {results['failed_analyses']}")
-            
-            if results['summary_stats']:
-                stats = results['summary_stats']
-                print(f"\nSummary Statistics:")
-                print(f"Average EPV: ${stats['avg_epv']:.2f}")
-                print(f"Average Quality: {stats['avg_quality']:.2f}")
-                print(f"Average Margin of Safety: {stats['avg_margin_of_safety']:.1f}%")
-                print(f"Undervalued stocks: {stats['undervalued_count']}")
-                print(f"High quality stocks: {stats['high_quality_count']}")
-            
-        elif args.command == "cache-stats":
-            stats = platform.get_cache_stats()
-            print(f"\n=== Cache Statistics ===")
-            print(f"Total entries: {stats['total_entries']}")
-            print(f"Total size: {stats['total_size_bytes']:,} bytes")
-            print(f"Expired entries: {stats['expired_entries']}")
-            
-        elif args.command == "clear-cache":
-            cleared = platform.clear_cache()
-            print(f"Cleared {cleared} cache entries")
-            
-        elif args.command == "web":
-            print(f"Starting web interface on port {args.port}...")
-            from ui.web_app import create_app
-            app = create_app(platform)
-            app.run(host="127.0.0.1", port=args.port, debug=True)
-        
-        elif args.command == "api":
-            print(f"Starting API server on port {args.port}...")
-            import uvicorn
-            uvicorn.run("api.main:app", host="0.0.0.0", port=args.port, reload=True)
-        
-        return 0
-        
+        handler = handlers.get(args.command)
+        if handler:
+            return handler(platform, args)
+        else:
+            print(f"Error: Unknown command '{args.command}'")
+            return 1
     except Exception as e:
         print(f"Error: {e}")
         return 1

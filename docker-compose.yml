@@ -1,0 +1,15 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+
+  web:
+    build: ./frontend
+    ports:
+      - "80:80"
+
+  redis:
+    image: "redis:alpine"

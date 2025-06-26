@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ title }}</h1>
+    <table>
+        <tr>
+            <th>Symbol</th>
+            <th>Company</th>
+            <th>EPV per Share</th>
+            <th>Current Price</th>
+            <th>Margin of Safety</th>
+            <th>Quality Score</th>
+        </tr>
+        {% for stock in stocks %}
+        <tr>
+            <td>{{ stock.symbol }}</td>
+            <td>{{ stock.company_name }}</td>
+            <td>{{ stock.epv_per_share }}</td>
+            <td>{{ stock.current_price }}</td>
+            <td>{{ stock.margin_of_safety }}</td>
+            <td>{{ stock.quality_score }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
