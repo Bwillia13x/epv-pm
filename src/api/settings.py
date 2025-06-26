@@ -1,13 +1,16 @@
 """
 API settings and configuration using pydantic-settings
 """
+from typing import Optional
+
 from pydantic_settings import BaseSettings
+from pydantic import Field
 
 class Settings(BaseSettings):
-    # API keys
-    alpha_vantage_api_key: str = "demo"
-    fred_api_key: str = "demo"
-    quandl_api_key: str = "demo"
+    # API keys are loaded from environment variables for security; no default values.
+    alpha_vantage_api_key: Optional[str] = Field(default=None, env="ALPHA_VANTAGE_API_KEY")
+    fred_api_key: Optional[str] = Field(default=None, env="FRED_API_KEY")
+    quandl_api_key: Optional[str] = Field(default=None, env="QUANDL_API_KEY")
 
     # Application settings
     app_name: str = "EPV Research Platform API"
