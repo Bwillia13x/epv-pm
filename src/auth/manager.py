@@ -1,7 +1,6 @@
 """
 User manager
 """
-import uuid
 import os
 from typing import Optional
 
