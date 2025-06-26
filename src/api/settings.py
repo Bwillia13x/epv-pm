@@ -1,7 +1,10 @@
 """
 API settings and configuration using pydantic-settings
 """
-from pydantic_settings import BaseSettings
+try:
+    from pydantic_settings import BaseSettings  # type: ignore
+except ImportError:  # Fallback for environments without pydantic-settings
+    from pydantic import BaseSettings  # type: ignore
 
 class Settings(BaseSettings):
     # API keys
