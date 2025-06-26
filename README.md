@@ -53,7 +53,12 @@ Access the web interface at `http://127.0.0.1:8050` after starting the server.
 ## Configuration
 
 - All configuration settings are in `config/config.py`.
-- Set environment variables or use `.env` for sensitive information like API keys and authentication secrets (e.g., `JWT_SECRET`).
+- Set environment variables or create a `.env` file for sensitive information such as:
+
+* `JWT_SECRET` – cryptographically-secure random string used for signing JWT tokens (required).
+* `ALPHA_VANTAGE_API_KEY`, `FRED_API_KEY`, `QUANDL_API_KEY` – data provider keys (optional but unlock extended data coverage).
+
+The application no longer ships with default demo keys; missing variables will result in limited functionality or startup errors (for `JWT_SECRET`).
 
 ## Directory Structure
 

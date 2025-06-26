@@ -11,6 +11,19 @@ This beautiful, modern frontend brings the EPV Research Platform to demo quality
 - Node.js 16+ and npm
 - Internet connection for financial data APIs
 
+### Environment Variables
+
+Create a `.env` file (or export variables in your shell) with at minimum:
+
+```bash
+JWT_SECRET=<secure_random_string>
+ALPHA_VANTAGE_API_KEY=<your_key>   # optional
+FRED_API_KEY=<your_key>            # optional
+QUANDL_API_KEY=<your_key>          # optional
+```
+
+`JWT_SECRET` is mandatory for the authentication layer.  Data-provider keys unlock richer datasets but the demo can run without them (with limited capabilities).
+
 ### 1. Start the Complete Demo
 
 ```bash
@@ -130,14 +143,14 @@ frontend/
 │   ├── components/
 │   │   └── layout/
 │   │       └── Navbar.tsx
-│   ├── pages/
-│   │   ├── Dashboard.tsx
-│   │   ├── StockAnalysis.tsx
-│   │   ├── Portfolio.tsx
-│   │   └── Reports.tsx
-│   ├── services/
-│   │   └── api.ts
-│   └── App.tsx
+│   │   ├── pages/
+│   │   │   ├── Dashboard.tsx
+│   │   │   ├── StockAnalysis.tsx
+│   │   │   ├── Portfolio.tsx
+│   │   │   └── Reports.tsx
+│   │   ├── services/
+│   │   │   └── api.ts
+│   │   └── App.tsx
 ```
 
 ### Backend Structure
