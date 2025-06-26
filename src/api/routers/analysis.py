@@ -7,7 +7,6 @@ from typing import List, Optional, Any
 import logging
 import asyncio
 from datetime import datetime
-from concurrent.futures import ProcessPoolExecutor
 
 from analysis.epv_calculator import EPVCalculator
 from analysis.research_generator import ResearchGenerator
@@ -27,23 +26,17 @@ epv_calculator = EPVCalculator()
 research_generator = ResearchGenerator()
 portfolio_manager = PortfolioManager()
 
-# ---------------------------------------------------------------------------
-# CPU-bound EPV calculations off-loaded to a small process-pool so that the
-# event-loop stays responsive while leveraging multiple cores.
-# ---------------------------------------------------------------------------
-_EPV_EXECUTOR: ProcessPoolExecutor = ProcessPoolExecutor(max_workers=4)
-
-def _compute_epv_sync(symbol: str, data: Any) -> Any:  # type: ignore[valid-type]
-    """Blocking helper executed in process pool – instantiates local EPVCalculator."""
-    calc = EPVCalculator()
-    return calc.calculate_epv(
-        symbol=symbol,
-        income_statements=getattr(data, "income_statements", []),  # type: ignore[attr-defined]
-        balance_sheets=getattr(data, "balance_sheets", []),  # type: ignore[attr-defined]
-        cash_flow_statements=getattr(data, "cash_flow_statements", []),  # type: ignore[attr-defined]
-        financial_ratios=getattr(data, "financial_ratios", []),  # type: ignore[attr-defined]
-        current_price=getattr(data, "current_price", None),  # type: ignore[attr-defined]
-        company_profile=getattr(data, "company_profile", None),  # type: ignore[attr-defined]
+# helper for thread dispatch
+async def _compute_epv_async(symbol: str, data: Any):  # type: ignore[valid-type]
+    return await asyncio.to_thread(
+        epv_calculator.calculate_epv,
+        symbol,
+        getattr(data, "income_statements", []),  # type: ignore[attr-defined]
+        getattr(data, "balance_sheets", []),  # type: ignore[attr-defined]
+        getattr(data, "cash_flow_statements", []),  # type: ignore[attr-defined]
+        getattr(data, "financial_ratios", []),  # type: ignore[attr-defined]
+        getattr(data, "current_price", None),  # type: ignore[attr-defined]
+        getattr(data, "company_profile", None),  # type: ignore[attr-defined]
     )
 
 class AnalysisRequest(BaseModel):
@@ -77,8 +70,7 @@ async def analyze_stock(symbol: str, request: AnalysisRequest):
             raise HTTPException(status_code=404, detail=f"No data found for symbol {symbol}")
         
         # Calculate EPV
-        loop = asyncio.get_running_loop()
-        epv_result = await loop.run_in_executor(_EPV_EXECUTOR, _compute_epv_sync, symbol, data)
+        epv_result = await _compute_epv_async(symbol, data)
         
         result = {
             "symbol": symbol,
@@ -90,8 +82,8 @@ async def analyze_stock(symbol: str, request: AnalysisRequest):
             "margin_of_safety": epv_result.margin_of_safety,
             "quality_score": epv_result.quality_score,
             "risk_score": getattr(epv_result, "risk_score", None),
-            "investment_thesis": epv_result.investment_thesis if request.analysis_type == "full" else None,
-            "risk_factors": epv_result.risk_factors if request.analysis_type == "full" else None,
+            "investment_thesis": getattr(epv_result, "investment_thesis", None) if request.analysis_type == "full" else None,
+            "risk_factors": getattr(epv_result, "risk_factors", None) if request.analysis_type == "full" else None,
         }
         
         # Add peer analysis if requested
@@ -111,8 +103,7 @@ async def analyze_stock(symbol: str, request: AnalysisRequest):
                     continue
 
                 try:
-                    loop = asyncio.get_running_loop()
-                    peer_epv = await loop.run_in_executor(_EPV_EXECUTOR, _compute_epv_sync, peer_symbol, peer_data)
+                    peer_epv = await _compute_epv_async(peer_symbol, peer_data)
                     peer_analysis.append({
                         "symbol": peer_symbol,
                         "epv_per_share": peer_epv.epv_per_share,
@@ -154,8 +145,7 @@ async def batch_analysis(request: BatchAnalysisRequest):
                 data = await data_collector.collect_comprehensive_data_async(symbol, request.years)
                 
                 if data:
-                    loop = asyncio.get_running_loop()
-                    epv_result = await loop.run_in_executor(_EPV_EXECUTOR, _compute_epv_sync, symbol, data)
+                    epv_result = await _compute_epv_async(symbol, data)
                     
                     result = {
                         "symbol": symbol,
@@ -164,7 +154,7 @@ async def batch_analysis(request: BatchAnalysisRequest):
                         "margin_of_safety": epv_result.margin_of_safety,
                         "quality_score": epv_result.quality_score,
                         "risk_score": getattr(epv_result, "risk_score", None),
-                        "recommendation": "BUY" if (epv_result.margin_of_safety or 0) > 0.2 else "HOLD" if (epv_result.margin_of_safety or 0) > 0 else "SELL"
+                        "recommendation": "BUY" if ((epv_result.margin_of_safety or 0) > 0.2) else ("HOLD" if ((epv_result.margin_of_safety or 0) > 0) else "SELL")
                     }
                     
                     results.append(result)
@@ -248,7 +238,7 @@ async def optimize_portfolio(request: PortfolioOptimizationRequest):
         # Perform portfolio optimization
         optimization_result = portfolio_manager.optimize_portfolio(  # type: ignore[arg-type]
             portfolio_data,  # type: ignore[arg-type]
-            portfolio_value=1.0,  # placeholder
+            portfolio_value=1.0,
             risk_budget=portfolio_manager.create_risk_budget(),
             optimization_objective="max_epv_quality",
         )
