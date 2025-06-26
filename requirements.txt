@@ -25,6 +25,9 @@ dash>=2.14.0
 
 # Database
 sqlalchemy>=2.0.0
+# Migration & PostgreSQL
+alembic>=1.12.0
+asyncpg>=0.29.0
 
 # Utilities
 python-dotenv>=1.0.0
