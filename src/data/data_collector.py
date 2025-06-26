@@ -27,30 +27,94 @@ class DataSource(ABC):
         self.logger = logging.getLogger(self.__class__.__name__)
     
     @abstractmethod
-    def get_company_profile(self, symbol: str) -> Optional[CompanyProfile]:
+    async def get_company_profile(self, symbol: str) -> Optional[CompanyProfile]:
         pass
     
     @abstractmethod
-    def get_financial_statements(self, symbol: str, years: int = 5) -> Tuple[List, List, List]:
+    async def get_financial_statements(self, symbol: str, years: int = 5) -> Tuple[List, List, List]:
         pass
     
     @abstractmethod
-    def get_market_data(self, symbol: str, start_date: date, end_date: date) -> List[MarketData]:
+    async def get_market_data(self, symbol: str, start_date: date, end_date: date) -> List[MarketData]:
         pass
+
+    @abstractmethod
+    async def get_quote(self, symbol: str) -> Optional[Dict]:
+        pass
+
+class AlphaVantageSource(DataSource):
+    """Alpha Vantage data source implementation"""
+
+    def __init__(self, api_key: str, rate_limiter: Optional[RateLimiter] = None):
+        super().__init__(rate_limiter)
+        self.api_key = api_key
+
+    async def get_company_profile(self, symbol: str) -> Optional[CompanyProfile]:
+        return None
+
+    async def get_financial_statements(self, symbol: str, years: int = 5) -> Tuple[List, List, List]:
+        return [], [], []
+
+    async def get_market_data(self, symbol: str, start_date: date, end_date: date) -> List[MarketData]:
+        return []
+
+    async def get_quote(self, symbol: str) -> Optional[Dict]:
+        """Get the latest quote from Alpha Vantage."""
+        try:
+            self.rate_limiter.wait_if_needed()
+            url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={symbol}&apikey={self.api_key}"
+            async with httpx.AsyncClient() as client:
+                response = await client.get(url)
+                response.raise_for_status()
+                data = response.json()
+                quote = data.get("Global Quote")
+                if quote:
+                    return {
+                        "symbol": quote["01. symbol"],
+                        "price": float(quote["05. price"]),
+                        "timestamp": datetime.now(),
+                        "provider": "AlphaVantage",
+                    }
+                return None
+        except Exception as e:
+            self.logger.error(f"Error fetching quote for {symbol} from Alpha Vantage: {e}")
+            return None
+
+class FredSource(DataSource):
+    """FRED data source implementation"""
+
+    def __init__(self, api_key: str, rate_limiter: Optional[RateLimiter] = None):
+        super().__init__(rate_limiter)
+        self.api_key = api_key
+
+    async def get_company_profile(self, symbol: str) -> Optional[CompanyProfile]:
+        return None
+
+    async def get_financial_statements(self, symbol: str, years: int = 5) -> Tuple[List, List, List]:
+        return [], [], []
+
+    async def get_market_data(self, symbol: str, start_date: date, end_date: date) -> List[MarketData]:
+        return []
+
+    async def get_quote(self, symbol: str) -> Optional[Dict]:
+        """Get the latest quote from FRED."""
+        # FRED does not provide real-time stock quotes
+        return None
 
 class YahooFinanceSource(DataSource):
     """Yahoo Finance data source implementation"""
     
-    def __init__(self, rate_limiter: Optional[RateLimiter] = None):
+    def __init__(self, rate_limiter: Optional[RateLimiter] = None, session: Optional[requests.Session] = None):
         super().__init__(rate_limiter)
+        self.session = session
         
-    def get_company_profile(self, symbol: str) -> Optional[CompanyProfile]:
+    async def get_company_profile(self, symbol: str) -> Optional[CompanyProfile]:
         """Get company profile from Yahoo Finance"""
         try:
             self.rate_limiter.wait_if_needed()
             
-            ticker = yf.Ticker(symbol)
-            info = ticker.info
+            ticker = yf.Ticker(symbol, session=self.session)
+            info = await ticker.info
             
             if not info or 'shortName' not in info:
                 return None
@@ -81,17 +145,17 @@ class YahooFinanceSource(DataSource):
             self.logger.error(f"Error fetching profile for {symbol}: {e}")
             return None
     
-    def get_financial_statements(self, symbol: str, years: int = 5) -> Tuple[List, List, List]:
+    async def get_financial_statements(self, symbol: str, years: int = 5) -> Tuple[List, List, List]:
         """Get financial statements from Yahoo Finance"""
         try:
             self.rate_limiter.wait_if_needed()
             
-            ticker = yf.Ticker(symbol)
+            ticker = yf.Ticker(symbol, session=self.session)
             
             # Get annual financial statements
-            income_stmt = ticker.financials
-            balance_sheet = ticker.balance_sheet  
-            cash_flow = ticker.cashflow
+            income_stmt = await ticker.financials
+            balance_sheet = await ticker.balance_sheet  
+            cash_flow = await ticker.cashflow
             
             income_statements = []
             balance_sheets = []
@@ -159,13 +223,13 @@ class YahooFinanceSource(DataSource):
             self.logger.error(f"Error fetching financial statements for {symbol}: {e}")
             return [], [], []
     
-    def get_market_data(self, symbol: str, start_date: date, end_date: date) -> List[MarketData]:
+    async def get_market_data(self, symbol: str, start_date: date, end_date: date) -> List[MarketData]:
         """Get historical market data"""
         try:
             self.rate_limiter.wait_if_needed()
             
-            ticker = yf.Ticker(symbol)
-            hist = ticker.history(start=start_date, end=end_date)
+            ticker = yf.Ticker(symbol, session=self.session)
+            hist = await ticker.history(start=start_date, end=end_date)
             
             market_data = []
             for idx, row in hist.iterrows():
@@ -182,6 +246,24 @@ class YahooFinanceSource(DataSource):
         except Exception as e:
             self.logger.error(f"Error fetching market data for {symbol}: {e}")
             return []
+
+    async def get_quote(self, symbol: str) -> Optional[Dict]:
+        """Get the latest quote from Yahoo Finance."""
+        try:
+            self.rate_limiter.wait_if_needed()
+            ticker = yf.Ticker(symbol, session=self.session)
+            info = await ticker.info
+            if info and info.get("regularMarketPrice"):
+                return {
+                    "symbol": symbol,
+                    "price": info["regularMarketPrice"],
+                    "timestamp": datetime.now(),
+                    "provider": "YahooFinance",
+                }
+            return None
+        except Exception as e:
+            self.logger.error(f"Error fetching quote for {symbol} from Yahoo Finance: {e}")
+            return None
     
     def _safe_get(self, df: pd.DataFrame, key: str, column) -> Optional[float]:
         """Safely get value from DataFrame"""
