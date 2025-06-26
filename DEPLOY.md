@@ -17,7 +17,20 @@ Before building or running containers in production you must supply the followin
 * `FRED_API_KEY` – St. Louis Fed (FRED) data-provider key (optional).
 * `QUANDL_API_KEY` – Nasdaq Data Link / Quandl data-provider key (optional).
 
-None of these have defaults in the codebase any longer; the application will fail to start or fall back to limited functionality unless they are provided.
+Generating a secure `JWT_SECRET`:
+
+```bash
+python - << 'PY'
+import secrets, base64, os
+print(secrets.token_urlsafe(64))  # copy the output and set as JWT_SECRET
+PY
+```
+
+API Key Fallback Behaviour:
+
+* If a given data-provider API key is **not** supplied, the platform will still start but related data calls will be skipped or restricted to any public/demo endpoints (which are rate-limited and may be disabled by the provider). For production workloads you **must** supply real keys.
+
+None of these variables have insecure defaults in the codebase any longer. Missing keys will trigger warnings at startup or reduced functionality, while an absent `JWT_SECRET` will raise a startup error in the authentication layer.
 
 ## Build and Push Docker Images
 
