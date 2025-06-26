@@ -1,0 +1,1972 @@
+[
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 20,
+      "row": 6
+    },
+    "filename": "/workspace/src/analysis/advanced_valuations.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 7
+          },
+          "location": {
+            "column": 1,
+            "row": 6
+          }
+        }
+      ],
+      "message": "Remove unused import: `pandas`"
+    },
+    "location": {
+      "column": 18,
+      "row": 6
+    },
+    "message": "`pandas` imported but unused",
+    "noqa_row": 6,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 47,
+      "row": 7
+    },
+    "filename": "/workspace/src/analysis/advanced_valuations.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from typing import Dict, List, Optional",
+          "end_location": {
+            "column": 54,
+            "row": 7
+          },
+          "location": {
+            "column": 1,
+            "row": 7
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 42,
+      "row": 7
+    },
+    "message": "`typing.Tuple` imported but unused",
+    "noqa_row": 7,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 54,
+      "row": 7
+    },
+    "filename": "/workspace/src/analysis/advanced_valuations.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from typing import Dict, List, Optional",
+          "end_location": {
+            "column": 54,
+            "row": 7
+          },
+          "location": {
+            "column": 1,
+            "row": 7
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 49,
+      "row": 7
+    },
+    "message": "`typing.Union` imported but unused",
+    "noqa_row": 7,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 36,
+      "row": 8
+    },
+    "filename": "/workspace/src/analysis/advanced_valuations.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from datetime import date",
+          "end_location": {
+            "column": 36,
+            "row": 8
+          },
+          "location": {
+            "column": 1,
+            "row": 8
+          }
+        }
+      ],
+      "message": "Remove unused import: `datetime.datetime`"
+    },
+    "location": {
+      "column": 28,
+      "row": 8
+    },
+    "message": "`datetime.datetime` imported but unused",
+    "noqa_row": 8,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 24,
+      "row": 11
+    },
+    "filename": "/workspace/src/analysis/advanced_valuations.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 12
+          },
+          "location": {
+            "column": 1,
+            "row": 11
+          }
+        }
+      ],
+      "message": "Remove unused import: `scipy.stats`"
+    },
+    "location": {
+      "column": 19,
+      "row": 11
+    },
+    "message": "`scipy.stats` imported but unused",
+    "noqa_row": 11,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 20,
+      "row": 15
+    },
+    "filename": "/workspace/src/analysis/advanced_valuations.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from models.financial_models import (\n    IncomeStatement, BalanceSheet, CashFlowStatement\n)",
+          "end_location": {
+            "column": 2,
+            "row": 16
+          },
+          "location": {
+            "column": 1,
+            "row": 13
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 5,
+      "row": 15
+    },
+    "message": "`models.financial_models.FinancialRatios` imported but unused",
+    "noqa_row": 15,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 36,
+      "row": 15
+    },
+    "filename": "/workspace/src/analysis/advanced_valuations.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from models.financial_models import (\n    IncomeStatement, BalanceSheet, CashFlowStatement\n)",
+          "end_location": {
+            "column": 2,
+            "row": 16
+          },
+          "location": {
+            "column": 1,
+            "row": 13
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 22,
+      "row": 15
+    },
+    "message": "`models.financial_models.CompanyProfile` imported but unused",
+    "noqa_row": 15,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 20,
+      "row": 6
+    },
+    "filename": "/workspace/src/analysis/epv_calculator.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 7
+          },
+          "location": {
+            "column": 1,
+            "row": 6
+          }
+        }
+      ],
+      "message": "Remove unused import: `pandas`"
+    },
+    "location": {
+      "column": 18,
+      "row": 6
+    },
+    "message": "`pandas` imported but unused",
+    "noqa_row": 6,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 36,
+      "row": 8
+    },
+    "filename": "/workspace/src/analysis/epv_calculator.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from datetime import date",
+          "end_location": {
+            "column": 36,
+            "row": 8
+          },
+          "location": {
+            "column": 1,
+            "row": 8
+          }
+        }
+      ],
+      "message": "Remove unused import: `datetime.datetime`"
+    },
+    "location": {
+      "column": 28,
+      "row": 8
+    },
+    "message": "`datetime.datetime` imported but unused",
+    "noqa_row": 8,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 31,
+      "row": 10
+    },
+    "filename": "/workspace/src/analysis/epv_calculator.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 11
+          },
+          "location": {
+            "column": 1,
+            "row": 10
+          }
+        }
+      ],
+      "message": "Remove unused import: `dataclasses.asdict`"
+    },
+    "location": {
+      "column": 25,
+      "row": 10
+    },
+    "message": "`dataclasses.asdict` imported but unused",
+    "noqa_row": 10,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 20,
+      "row": 6
+    },
+    "filename": "/workspace/src/analysis/portfolio_manager.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 7
+          },
+          "location": {
+            "column": 1,
+            "row": 6
+          }
+        }
+      ],
+      "message": "Remove unused import: `pandas`"
+    },
+    "location": {
+      "column": 18,
+      "row": 6
+    },
+    "message": "`pandas` imported but unused",
+    "noqa_row": 6,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 47,
+      "row": 7
+    },
+    "filename": "/workspace/src/analysis/portfolio_manager.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from typing import Dict, List, Optional",
+          "end_location": {
+            "column": 47,
+            "row": 7
+          },
+          "location": {
+            "column": 1,
+            "row": 7
+          }
+        }
+      ],
+      "message": "Remove unused import: `typing.Tuple`"
+    },
+    "location": {
+      "column": 42,
+      "row": 7
+    },
+    "message": "`typing.Tuple` imported but unused",
+    "noqa_row": 7,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 36,
+      "row": 8
+    },
+    "filename": "/workspace/src/analysis/portfolio_manager.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from datetime import date",
+          "end_location": {
+            "column": 47,
+            "row": 8
+          },
+          "location": {
+            "column": 1,
+            "row": 8
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 28,
+      "row": 8
+    },
+    "message": "`datetime.datetime` imported but unused",
+    "noqa_row": 8,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 47,
+      "row": 8
+    },
+    "filename": "/workspace/src/analysis/portfolio_manager.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from datetime import date",
+          "end_location": {
+            "column": 47,
+            "row": 8
+          },
+          "location": {
+            "column": 1,
+            "row": 8
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 38,
+      "row": 8
+    },
+    "message": "`datetime.timedelta` imported but unused",
+    "noqa_row": 8,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 41,
+      "row": 10
+    },
+    "filename": "/workspace/src/analysis/portfolio_manager.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from dataclasses import dataclass",
+          "end_location": {
+            "column": 41,
+            "row": 10
+          },
+          "location": {
+            "column": 1,
+            "row": 10
+          }
+        }
+      ],
+      "message": "Remove unused import: `dataclasses.field`"
+    },
+    "location": {
+      "column": 36,
+      "row": 10
+    },
+    "message": "`dataclasses.field` imported but unused",
+    "noqa_row": 10,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "E402",
+    "end_location": {
+      "column": 82,
+      "row": 15
+    },
+    "filename": "/workspace/src/analysis/portfolio_manager.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 15
+    },
+    "message": "Module level import not at top of file",
+    "noqa_row": 15,
+    "url": "https://docs.astral.sh/ruff/rules/module-import-not-at-top-of-file"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 51,
+      "row": 15
+    },
+    "filename": "/workspace/src/analysis/portfolio_manager.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from models.financial_models import MarketData, PortfolioPosition",
+          "end_location": {
+            "column": 82,
+            "row": 15
+          },
+          "location": {
+            "column": 1,
+            "row": 15
+          }
+        }
+      ],
+      "message": "Remove unused import: `models.financial_models.EPVCalculation`"
+    },
+    "location": {
+      "column": 37,
+      "row": 15
+    },
+    "message": "`models.financial_models.EPVCalculation` imported but unused",
+    "noqa_row": 15,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F841",
+    "end_location": {
+      "column": 21,
+      "row": 130
+    },
+    "filename": "/workspace/src/analysis/portfolio_manager.py",
+    "fix": {
+      "applicability": "unsafe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 24,
+            "row": 130
+          },
+          "location": {
+            "column": 13,
+            "row": 130
+          }
+        }
+      ],
+      "message": "Remove assignment to unused variable `n_assets`"
+    },
+    "location": {
+      "column": 13,
+      "row": 130
+    },
+    "message": "Local variable `n_assets` is assigned to but never used",
+    "noqa_row": 130,
+    "url": "https://docs.astral.sh/ruff/rules/unused-variable"
+  },
+  {
+    "cell": null,
+    "code": "E722",
+    "end_location": {
+      "column": 15,
+      "row": 583
+    },
+    "filename": "/workspace/src/analysis/portfolio_manager.py",
+    "fix": null,
+    "location": {
+      "column": 9,
+      "row": 583
+    },
+    "message": "Do not use bare `except`",
+    "noqa_row": 583,
+    "url": "https://docs.astral.sh/ruff/rules/bare-except"
+  },
+  {
+    "cell": null,
+    "code": "E722",
+    "end_location": {
+      "column": 15,
+      "row": 600
+    },
+    "filename": "/workspace/src/analysis/portfolio_manager.py",
+    "fix": null,
+    "location": {
+      "column": 9,
+      "row": 600
+    },
+    "message": "Do not use bare `except`",
+    "noqa_row": 600,
+    "url": "https://docs.astral.sh/ruff/rules/bare-except"
+  },
+  {
+    "cell": null,
+    "code": null,
+    "end_location": {
+      "column": 88,
+      "row": 429
+    },
+    "filename": "/workspace/src/analysis/report_generator.py",
+    "fix": null,
+    "location": {
+      "column": 87,
+      "row": 429
+    },
+    "message": "SyntaxError: f-string: single '}' is not allowed",
+    "noqa_row": null,
+    "url": null
+  },
+  {
+    "cell": null,
+    "code": null,
+    "end_location": {
+      "column": 106,
+      "row": 430
+    },
+    "filename": "/workspace/src/analysis/report_generator.py",
+    "fix": null,
+    "location": {
+      "column": 105,
+      "row": 430
+    },
+    "message": "SyntaxError: f-string: single '}' is not allowed",
+    "noqa_row": null,
+    "url": null
+  },
+  {
+    "cell": null,
+    "code": null,
+    "end_location": {
+      "column": 81,
+      "row": 431
+    },
+    "filename": "/workspace/src/analysis/report_generator.py",
+    "fix": null,
+    "location": {
+      "column": 80,
+      "row": 431
+    },
+    "message": "SyntaxError: f-string: single '}' is not allowed",
+    "noqa_row": null,
+    "url": null
+  },
+  {
+    "cell": null,
+    "code": null,
+    "end_location": {
+      "column": 110,
+      "row": 825
+    },
+    "filename": "/workspace/src/analysis/report_generator.py",
+    "fix": null,
+    "location": {
+      "column": 109,
+      "row": 825
+    },
+    "message": "SyntaxError: f-string: single '}' is not allowed",
+    "noqa_row": null,
+    "url": null
+  },
+  {
+    "cell": null,
+    "code": null,
+    "end_location": {
+      "column": 121,
+      "row": 826
+    },
+    "filename": "/workspace/src/analysis/report_generator.py",
+    "fix": null,
+    "location": {
+      "column": 120,
+      "row": 826
+    },
+    "message": "SyntaxError: f-string: single '}' is not allowed",
+    "noqa_row": null,
+    "url": null
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 51,
+      "row": 12
+    },
+    "filename": "/workspace/src/analysis/research_generator.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from models.financial_models import (\n    ResearchReport, EPVCalculation, MarketData\n)",
+          "end_location": {
+            "column": 2,
+            "row": 15
+          },
+          "location": {
+            "column": 1,
+            "row": 11
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 37,
+      "row": 12
+    },
+    "message": "`models.financial_models.CompanyProfile` imported but unused",
+    "noqa_row": 12,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 20,
+      "row": 13
+    },
+    "filename": "/workspace/src/analysis/research_generator.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from models.financial_models import (\n    ResearchReport, EPVCalculation, MarketData\n)",
+          "end_location": {
+            "column": 2,
+            "row": 15
+          },
+          "location": {
+            "column": 1,
+            "row": 11
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 5,
+      "row": 13
+    },
+    "message": "`models.financial_models.IncomeStatement` imported but unused",
+    "noqa_row": 13,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 34,
+      "row": 13
+    },
+    "filename": "/workspace/src/analysis/research_generator.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from models.financial_models import (\n    ResearchReport, EPVCalculation, MarketData\n)",
+          "end_location": {
+            "column": 2,
+            "row": 15
+          },
+          "location": {
+            "column": 1,
+            "row": 11
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 22,
+      "row": 13
+    },
+    "message": "`models.financial_models.BalanceSheet` imported but unused",
+    "noqa_row": 13,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 53,
+      "row": 13
+    },
+    "filename": "/workspace/src/analysis/research_generator.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from models.financial_models import (\n    ResearchReport, EPVCalculation, MarketData\n)",
+          "end_location": {
+            "column": 2,
+            "row": 15
+          },
+          "location": {
+            "column": 1,
+            "row": 11
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 36,
+      "row": 13
+    },
+    "message": "`models.financial_models.CashFlowStatement` imported but unused",
+    "noqa_row": 13,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 20,
+      "row": 14
+    },
+    "filename": "/workspace/src/analysis/research_generator.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from models.financial_models import (\n    ResearchReport, EPVCalculation, MarketData\n)",
+          "end_location": {
+            "column": 2,
+            "row": 15
+          },
+          "location": {
+            "column": 1,
+            "row": 11
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 5,
+      "row": 14
+    },
+    "message": "`models.financial_models.FinancialRatios` imported but unused",
+    "noqa_row": 14,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 24,
+      "row": 5
+    },
+    "filename": "/workspace/src/analysis/risk.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 6
+          },
+          "location": {
+            "column": 1,
+            "row": 5
+          }
+        }
+      ],
+      "message": "Remove unused import: `scipy.stats`"
+    },
+    "location": {
+      "column": 19,
+      "row": 5
+    },
+    "message": "`scipy.stats` imported but unused",
+    "noqa_row": 5,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 28,
+      "row": 4
+    },
+    "filename": "/workspace/src/api/middleware.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 5
+          },
+          "location": {
+            "column": 1,
+            "row": 4
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 21,
+      "row": 4
+    },
+    "message": "`fastapi.Request` imported but unused",
+    "noqa_row": 4,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 38,
+      "row": 4
+    },
+    "filename": "/workspace/src/api/middleware.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 5
+          },
+          "location": {
+            "column": 1,
+            "row": 4
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 30,
+      "row": 4
+    },
+    "message": "`fastapi.Response` imported but unused",
+    "noqa_row": 4,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "E402",
+    "end_location": {
+      "column": 57,
+      "row": 11
+    },
+    "filename": "/workspace/src/api/middleware.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 11
+    },
+    "message": "Module level import not at top of file",
+    "noqa_row": 11,
+    "url": "https://docs.astral.sh/ruff/rules/module-import-not-at-top-of-file"
+  },
+  {
+    "cell": null,
+    "code": "E722",
+    "end_location": {
+      "column": 15,
+      "row": 57
+    },
+    "filename": "/workspace/src/api/sockets.py",
+    "fix": null,
+    "location": {
+      "column": 9,
+      "row": 57
+    },
+    "message": "Do not use bare `except`",
+    "noqa_row": 57,
+    "url": "https://docs.astral.sh/ruff/rules/bare-except"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 38,
+      "row": 10
+    },
+    "filename": "/workspace/src/auth/auth.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 11
+          },
+          "location": {
+            "column": 1,
+            "row": 10
+          }
+        }
+      ],
+      "message": "Remove unused import: `.manager.get_user_manager`"
+    },
+    "location": {
+      "column": 22,
+      "row": 10
+    },
+    "message": "`.manager.get_user_manager` imported but unused",
+    "noqa_row": 10,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 12,
+      "row": 4
+    },
+    "filename": "/workspace/src/auth/manager.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 5
+          },
+          "location": {
+            "column": 1,
+            "row": 4
+          }
+        }
+      ],
+      "message": "Remove unused import: `uuid`"
+    },
+    "location": {
+      "column": 8,
+      "row": 4
+    },
+    "message": "`uuid` imported but unused",
+    "noqa_row": 4,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 10,
+      "row": 4
+    },
+    "filename": "/workspace/src/config/config.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 5
+          },
+          "location": {
+            "column": 1,
+            "row": 4
+          }
+        }
+      ],
+      "message": "Remove unused import: `os`"
+    },
+    "location": {
+      "column": 8,
+      "row": 4
+    },
+    "message": "`os` imported but unused",
+    "noqa_row": 4,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 30,
+      "row": 5
+    },
+    "filename": "/workspace/src/config/config.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from typing import Dict, Optional",
+          "end_location": {
+            "column": 40,
+            "row": 5
+          },
+          "location": {
+            "column": 1,
+            "row": 5
+          }
+        }
+      ],
+      "message": "Remove unused import: `typing.List`"
+    },
+    "location": {
+      "column": 26,
+      "row": 5
+    },
+    "message": "`typing.List` imported but unused",
+    "noqa_row": 5,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 16,
+      "row": 5
+    },
+    "filename": "/workspace/src/data/alternative_data.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 6
+          },
+          "location": {
+            "column": 1,
+            "row": 5
+          }
+        }
+      ],
+      "message": "Remove unused import: `requests`"
+    },
+    "location": {
+      "column": 8,
+      "row": 5
+    },
+    "message": "`requests` imported but unused",
+    "noqa_row": 5,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 20,
+      "row": 6
+    },
+    "filename": "/workspace/src/data/alternative_data.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 7
+          },
+          "location": {
+            "column": 1,
+            "row": 6
+          }
+        }
+      ],
+      "message": "Remove unused import: `pandas`"
+    },
+    "location": {
+      "column": 18,
+      "row": 6
+    },
+    "message": "`pandas` imported but unused",
+    "noqa_row": 6,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 47,
+      "row": 8
+    },
+    "filename": "/workspace/src/data/alternative_data.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from typing import Dict, List, Optional, Union",
+          "end_location": {
+            "column": 54,
+            "row": 8
+          },
+          "location": {
+            "column": 1,
+            "row": 8
+          }
+        }
+      ],
+      "message": "Remove unused import: `typing.Tuple`"
+    },
+    "location": {
+      "column": 42,
+      "row": 8
+    },
+    "message": "`typing.Tuple` imported but unused",
+    "noqa_row": 8,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 10,
+      "row": 11
+    },
+    "filename": "/workspace/src/data/alternative_data.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 12
+          },
+          "location": {
+            "column": 1,
+            "row": 11
+          }
+        }
+      ],
+      "message": "Remove unused import: `re`"
+    },
+    "location": {
+      "column": 8,
+      "row": 11
+    },
+    "message": "`re` imported but unused",
+    "noqa_row": 11,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 12,
+      "row": 12
+    },
+    "filename": "/workspace/src/data/alternative_data.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 13
+          },
+          "location": {
+            "column": 1,
+            "row": 12
+          }
+        }
+      ],
+      "message": "Remove unused import: `json`"
+    },
+    "location": {
+      "column": 8,
+      "row": 12
+    },
+    "message": "`json` imported but unused",
+    "noqa_row": 12,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 19,
+      "row": 7
+    },
+    "filename": "/workspace/src/data/data_collector.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 8
+          },
+          "location": {
+            "column": 1,
+            "row": 7
+          }
+        }
+      ],
+      "message": "Remove unused import: `numpy`"
+    },
+    "location": {
+      "column": 17,
+      "row": 7
+    },
+    "message": "`numpy` imported but unused",
+    "noqa_row": 7,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F821",
+    "end_location": {
+      "column": 29,
+      "row": 66
+    },
+    "filename": "/workspace/src/data/data_collector.py",
+    "fix": null,
+    "location": {
+      "column": 24,
+      "row": 66
+    },
+    "message": "Undefined name `httpx`",
+    "noqa_row": 66,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-name"
+  },
+  {
+    "cell": null,
+    "code": "E722",
+    "end_location": {
+      "column": 15,
+      "row": 275
+    },
+    "filename": "/workspace/src/data/data_collector.py",
+    "fix": null,
+    "location": {
+      "column": 9,
+      "row": 275
+    },
+    "message": "Do not use bare `except`",
+    "noqa_row": 275,
+    "url": "https://docs.astral.sh/ruff/rules/bare-except"
+  },
+  {
+    "cell": null,
+    "code": "E722",
+    "end_location": {
+      "column": 15,
+      "row": 287
+    },
+    "filename": "/workspace/src/data/data_collector.py",
+    "fix": null,
+    "location": {
+      "column": 9,
+      "row": 287
+    },
+    "message": "Do not use bare `except`",
+    "noqa_row": 287,
+    "url": "https://docs.astral.sh/ruff/rules/bare-except"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 59,
+      "row": 15
+    },
+    "filename": "/workspace/src/main.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 16
+          },
+          "location": {
+            "column": 1,
+            "row": 15
+          }
+        }
+      ],
+      "message": "Remove unused import: `data.alternative_data.AlternativeDataCollector`"
+    },
+    "location": {
+      "column": 35,
+      "row": 15
+    },
+    "message": "`data.alternative_data.AlternativeDataCollector` imported but unused",
+    "noqa_row": 15,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 65,
+      "row": 18
+    },
+    "filename": "/workspace/src/main.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 19
+          },
+          "location": {
+            "column": 1,
+            "row": 18
+          }
+        }
+      ],
+      "message": "Remove unused import: `analysis.advanced_valuations.AdvancedValuationEngine`"
+    },
+    "location": {
+      "column": 42,
+      "row": 18
+    },
+    "message": "`analysis.advanced_valuations.AdvancedValuationEngine` imported but unused",
+    "noqa_row": 18,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 56,
+      "row": 19
+    },
+    "filename": "/workspace/src/main.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 20
+          },
+          "location": {
+            "column": 1,
+            "row": 19
+          }
+        }
+      ],
+      "message": "Remove unused import: `analysis.portfolio_manager.PortfolioManager`"
+    },
+    "location": {
+      "column": 40,
+      "row": 19
+    },
+    "message": "`analysis.portfolio_manager.PortfolioManager` imported but unused",
+    "noqa_row": 19,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 66,
+      "row": 20
+    },
+    "filename": "/workspace/src/main.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 21
+          },
+          "location": {
+            "column": 1,
+            "row": 20
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 39,
+      "row": 20
+    },
+    "message": "`analysis.report_generator.ProfessionalReportGenerator` imported but unused",
+    "noqa_row": 20,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 82,
+      "row": 20
+    },
+    "filename": "/workspace/src/main.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 21
+          },
+          "location": {
+            "column": 1,
+            "row": 20
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 68,
+      "row": 20
+    },
+    "message": "`analysis.report_generator.ComplianceInfo` imported but unused",
+    "noqa_row": 20,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F541",
+    "end_location": {
+      "column": 46,
+      "row": 311
+    },
+    "filename": "/workspace/src/main.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "\"\\n=== Batch Analysis Results ===\"",
+          "end_location": {
+            "column": 46,
+            "row": 311
+          },
+          "location": {
+            "column": 11,
+            "row": 311
+          }
+        }
+      ],
+      "message": "Remove extraneous `f` prefix"
+    },
+    "location": {
+      "column": 11,
+      "row": 311
+    },
+    "message": "f-string without any placeholders",
+    "noqa_row": 311,
+    "url": "https://docs.astral.sh/ruff/rules/f-string-missing-placeholders"
+  },
+  {
+    "cell": null,
+    "code": "F541",
+    "end_location": {
+      "column": 39,
+      "row": 318
+    },
+    "filename": "/workspace/src/main.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "\"\\nSummary Statistics:\"",
+          "end_location": {
+            "column": 39,
+            "row": 318
+          },
+          "location": {
+            "column": 15,
+            "row": 318
+          }
+        }
+      ],
+      "message": "Remove extraneous `f` prefix"
+    },
+    "location": {
+      "column": 15,
+      "row": 318
+    },
+    "message": "f-string without any placeholders",
+    "noqa_row": 318,
+    "url": "https://docs.astral.sh/ruff/rules/f-string-missing-placeholders"
+  },
+  {
+    "cell": null,
+    "code": "F541",
+    "end_location": {
+      "column": 40,
+      "row": 329
+    },
+    "filename": "/workspace/src/main.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "\"\\n=== Cache Statistics ===\"",
+          "end_location": {
+            "column": 40,
+            "row": 329
+          },
+          "location": {
+            "column": 11,
+            "row": 329
+          }
+        }
+      ],
+      "message": "Remove extraneous `f` prefix"
+    },
+    "location": {
+      "column": 11,
+      "row": 329
+    },
+    "message": "f-string without any placeholders",
+    "noqa_row": 329,
+    "url": "https://docs.astral.sh/ruff/rules/f-string-missing-placeholders"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 47,
+      "row": 5
+    },
+    "filename": "/workspace/src/models/financial_models.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from typing import Dict, List, Optional",
+          "end_location": {
+            "column": 47,
+            "row": 5
+          },
+          "location": {
+            "column": 1,
+            "row": 5
+          }
+        }
+      ],
+      "message": "Remove unused import: `typing.Tuple`"
+    },
+    "location": {
+      "column": 42,
+      "row": 5
+    },
+    "message": "`typing.Tuple` imported but unused",
+    "noqa_row": 5,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 20,
+      "row": 7
+    },
+    "filename": "/workspace/src/models/financial_models.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 8
+          },
+          "location": {
+            "column": 1,
+            "row": 7
+          }
+        }
+      ],
+      "message": "Remove unused import: `pandas`"
+    },
+    "location": {
+      "column": 18,
+      "row": 7
+    },
+    "message": "`pandas` imported but unused",
+    "noqa_row": 7,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 19,
+      "row": 8
+    },
+    "filename": "/workspace/src/models/financial_models.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 9
+          },
+          "location": {
+            "column": 1,
+            "row": 8
+          }
+        }
+      ],
+      "message": "Remove unused import: `numpy`"
+    },
+    "location": {
+      "column": 17,
+      "row": 8
+    },
+    "message": "`numpy` imported but unused",
+    "noqa_row": 8,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 31,
+      "row": 7
+    },
+    "filename": "/workspace/src/ui/web_app.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 8
+          },
+          "location": {
+            "column": 1,
+            "row": 7
+          }
+        }
+      ],
+      "message": "Remove unused import: `plotly.graph_objs`"
+    },
+    "location": {
+      "column": 29,
+      "row": 7
+    },
+    "message": "`plotly.graph_objs` imported but unused",
+    "noqa_row": 7,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 19,
+      "row": 10
+    },
+    "filename": "/workspace/src/ui/web_app.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 11
+          },
+          "location": {
+            "column": 1,
+            "row": 10
+          }
+        }
+      ],
+      "message": "Remove unused import: `numpy`"
+    },
+    "location": {
+      "column": 17,
+      "row": 10
+    },
+    "message": "`numpy` imported but unused",
+    "noqa_row": 10,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 30,
+      "row": 11
+    },
+    "filename": "/workspace/src/ui/web_app.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 12
+          },
+          "location": {
+            "column": 1,
+            "row": 11
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 22,
+      "row": 11
+    },
+    "message": "`datetime.datetime` imported but unused",
+    "noqa_row": 11,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 36,
+      "row": 11
+    },
+    "filename": "/workspace/src/ui/web_app.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 12
+          },
+          "location": {
+            "column": 1,
+            "row": 11
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 32,
+      "row": 11
+    },
+    "message": "`datetime.date` imported but unused",
+    "noqa_row": 11,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 15,
+      "row": 12
+    },
+    "filename": "/workspace/src/ui/web_app.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 13
+          },
+          "location": {
+            "column": 1,
+            "row": 12
+          }
+        }
+      ],
+      "message": "Remove unused import: `logging`"
+    },
+    "location": {
+      "column": 8,
+      "row": 12
+    },
+    "message": "`logging` imported but unused",
+    "noqa_row": 12,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 12,
+      "row": 7
+    },
+    "filename": "/workspace/src/utils/cache_manager.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 8
+          },
+          "location": {
+            "column": 1,
+            "row": 7
+          }
+        }
+      ],
+      "message": "Remove unused import: `time`"
+    },
+    "location": {
+      "column": 8,
+      "row": 7
+    },
+    "message": "`time` imported but unused",
+    "noqa_row": 7,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 30,
+      "row": 7
+    },
+    "filename": "/workspace/src/utils/rate_limiter.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from typing import Dict",
+          "end_location": {
+            "column": 30,
+            "row": 7
+          },
+          "location": {
+            "column": 1,
+            "row": 7
+          }
+        }
+      ],
+      "message": "Remove unused import: `typing.List`"
+    },
+    "location": {
+      "column": 26,
+      "row": 7
+    },
+    "message": "`typing.List` imported but unused",
+    "noqa_row": 7,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  }
+]

@@ -1,7 +1,10 @@
 """
 API settings and configuration using pydantic-settings
 """
+
 from pydantic_settings import BaseSettings
+from pydantic import Field
+
 
 class Settings(BaseSettings):
     # API keys
@@ -13,7 +16,11 @@ class Settings(BaseSettings):
     app_name: str = "EPV Research Platform API"
     log_level: str = "INFO"
 
+    # Feature flags
+    pdf_enabled: bool = Field(False, env="PDF_ENABLED")
+
     class Config:
         env_file = ".env"
+
 
 settings = Settings()

@@ -1,20 +1,32 @@
 """
 Data gateway for fetching financial data from multiple providers
 """
+
 import logging
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Sequence
 from datetime import datetime, timedelta
 
-from .data_collector import DataSource, YahooFinanceSource, AlphaVantageSource, FredSource
-from ..utils.cache_manager import CacheManager
-from ..api.settings import settings
+from src.data.data_collector import (
+    DataSource,
+    YahooFinanceSource,
+    AlphaVantageSource,
+    FredSource,
+)
+from src.models.financial_models import MarketData
+from src.utils.cache_manager import CacheManager
+from src.api.settings import settings
+
 
 class DataGateway:
     """
     A gateway for fetching financial data from multiple providers with a fallback and caching strategy.
     """
 
-    def __init__(self, cache_manager: Optional[CacheManager] = None, providers: Optional[List[DataSource]] = None):
+    def __init__(
+        self,
+        cache_manager: Optional[CacheManager] = None,
+        providers: Optional[List[DataSource]] = None,
+    ):
         self.logger = logging.getLogger(__name__)
         self.cache_manager = cache_manager or CacheManager()
         self.providers: List[DataSource] = providers or [
@@ -22,9 +34,9 @@ class DataGateway:
             AlphaVantageSource(api_key=settings.alpha_vantage_api_key),
             FredSource(api_key=settings.fred_api_key),
         ]
-        self.quote_cache = {} # In-memory cache for quotes
+        self.quote_cache = {}  # In-memory cache for quotes
 
-    async def get_prices(self, symbol: str) -> Optional[List[Dict]]:
+    async def get_prices(self, symbol: str) -> Optional[Sequence[MarketData]]:
         """Get historical prices for a symbol."""
         cache_key = f"prices_{symbol}"
         cached_data = self.cache_manager.get(cache_key)
@@ -38,13 +50,19 @@ class DataGateway:
                 start_date = end_date - timedelta(days=365 * 5)  # 5 years of data
                 prices = await provider.get_market_data(symbol, start_date, end_date)
                 if prices:
-                    self.logger.info(f"Fetched price data for {symbol} from {provider.__class__.__name__}")
+                    self.logger.info(
+                        f"Fetched price data for {symbol} from {provider.__class__.__name__}"
+                    )
                     self.cache_manager.set(cache_key, prices)
                     return prices
             except Exception as e:
-                self.logger.warning(f"Failed to fetch price data for {symbol} from {provider.__class__.__name__}: {e}")
+                self.logger.warning(
+                    f"Failed to fetch price data for {symbol} from {provider.__class__.__name__}: {e}"
+                )
 
-        self.logger.error(f"Failed to fetch price data for {symbol} from all providers.")
+        self.logger.error(
+            f"Failed to fetch price data for {symbol} from all providers."
+        )
         return None
 
     async def get_quote(self, symbol: str) -> Optional[Dict]:
@@ -57,11 +75,15 @@ class DataGateway:
             try:
                 quote = await provider.get_quote(symbol)
                 if quote:
-                    self.logger.info(f"Fetched quote for {symbol} from {provider.__class__.__name__}")
+                    self.logger.info(
+                        f"Fetched quote for {symbol} from {provider.__class__.__name__}"
+                    )
                     self.quote_cache[symbol] = quote
                     return quote
             except Exception as e:
-                self.logger.warning(f"Failed to fetch quote for {symbol} from {provider.__class__.__name__}: {e}")
+                self.logger.warning(
+                    f"Failed to fetch quote for {symbol} from {provider.__class__.__name__}: {e}"
+                )
 
         self.logger.error(f"Failed to fetch quote for {symbol} from all providers.")
         return None
@@ -77,7 +99,9 @@ class DataGateway:
         for provider in self.providers:
             try:
                 profile = await provider.get_company_profile(symbol)
-                income, balance, cashflow = await provider.get_financial_statements(symbol)
+                income, balance, cashflow = await provider.get_financial_statements(
+                    symbol
+                )
                 if profile and income and balance and cashflow:
                     fundamentals = {
                         "profile": profile,
@@ -85,11 +109,17 @@ class DataGateway:
                         "balance_sheet": balance,
                         "cash_flow_statement": cashflow,
                     }
-                    self.logger.info(f"Fetched fundamental data for {symbol} from {provider.__class__.__name__}")
+                    self.logger.info(
+                        f"Fetched fundamental data for {symbol} from {provider.__class__.__name__}"
+                    )
                     self.cache_manager.set(cache_key, fundamentals)
                     return fundamentals
             except Exception as e:
-                self.logger.warning(f"Failed to fetch fundamental data for {symbol} from {provider.__class__.__name__}: {e}")
-        
-        self.logger.error(f"Failed to fetch fundamental data for {symbol} from all providers.")
+                self.logger.warning(
+                    f"Failed to fetch fundamental data for {symbol} from {provider.__class__.__name__}: {e}"
+                )
+
+        self.logger.error(
+            f"Failed to fetch fundamental data for {symbol} from all providers."
+        )
         return None

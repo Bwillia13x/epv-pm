@@ -1,0 +1,2 @@
+src/analysis/report_generator.py:429: error: f-string: single '}' is not allowed  [syntax]
+Found 1 error in 1 file (errors prevented further checking)

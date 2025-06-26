@@ -1,6 +1,7 @@
 """
 API routes for market data
 """
+
 from fastapi import APIRouter, HTTPException
 import logging
 
@@ -10,6 +11,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 data_gateway = DataGateway()
+
 
 @router.get("/quotes/{symbol}")
 async def get_quote(symbol: str):

@@ -1,15 +1,16 @@
 """
 User manager
 """
-import uuid
+
 from typing import Optional
 
 from fastapi import Depends, Request
 from fastapi_users import BaseUserManager, IntegerIDMixin
 
-from .db import User, get_user_db
+from src.auth.db import User, get_user_db
 
 SECRET = "SECRET"
+
 
 class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
     reset_password_token_secret = SECRET
@@ -27,6 +28,7 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
         self, user: User, token: str, request: Optional[Request] = None
     ):
         print(f"Verification requested for user {user.id}. Verification token: {token}")
+
 
 async def get_user_manager(user_db=Depends(get_user_db)):
     yield UserManager(user_db)
