@@ -55,14 +55,14 @@ class AssetBasedValuation:
     asset_adjustments: Dict[str, float] = field(default_factory=dict)
     liability_adjustments: Dict[str, float] = field(default_factory=dict)
     
-    # Results
-    adjusted_book_value: float
-    liquidation_value: float
-    replacement_cost: float
+    # Results (defaults 0.0 to ensure defaulted-field ordering)
+    adjusted_book_value: float = 0.0
+    liquidation_value: float = 0.0
+    replacement_cost: float = 0.0
     
     # Per share values
-    adjusted_book_value_per_share: float
-    liquidation_value_per_share: float
+    adjusted_book_value_per_share: float = 0.0
+    liquidation_value_per_share: float = 0.0
 
 @dataclass
 class MarketMultiplesValuation:
@@ -82,14 +82,14 @@ class MarketMultiplesValuation:
     industry_multiples: Dict[str, float] = field(default_factory=dict)
     
     # Valuation estimates
-    pe_based_value: Optional[float]
-    pb_based_value: Optional[float]
-    ps_based_value: Optional[float]
-    ev_ebitda_based_value: Optional[float]
+    pe_based_value: float = 0.0
+    pb_based_value: float = 0.0
+    ps_based_value: float = 0.0
+    ev_ebitda_based_value: float = 0.0
     
     # Summary
-    multiples_average_value: float
-    multiples_median_value: float
+    multiples_average_value: float = 0.0
+    multiples_median_value: float = 0.0
 
 @dataclass
 class MonteCarloResults:
@@ -341,10 +341,10 @@ class AdvancedValuationEngine:
                 ev_to_ebitda=None,  # Would need EBITDA calculation
                 peer_multiples=peer_data or {},
                 industry_multiples=industry_multiples,
-                pe_based_value=valuations.get('pe_based_value'),
-                pb_based_value=valuations.get('pb_based_value'),
-                ps_based_value=valuations.get('ps_based_value'),
-                ev_ebitda_based_value=None,
+                pe_based_value=valuations.get('pe_based_value', 0.0),
+                pb_based_value=valuations.get('pb_based_value', 0.0),
+                ps_based_value=valuations.get('ps_based_value', 0.0),
+                ev_ebitda_based_value=valuations.get('ev_ebitda_based_value', 0.0),
                 multiples_average_value=multiples_average_value,
                 multiples_median_value=multiples_median_value
             )

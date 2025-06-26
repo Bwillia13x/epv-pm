@@ -4,9 +4,9 @@ Configuration settings for the EPV Research Platform
 import os
 from typing import Dict, List, Optional
 try:
-    from pydantic_settings import BaseSettings
-except ImportError:
-    from pydantic import BaseSettings
+    from pydantic_settings import BaseSettings  # type: ignore
+except ImportError:  # Compatibility when pydantic-settings not installed
+    from pydantic import BaseSettings  # type: ignore
 from pydantic import Field
 from pathlib import Path
 

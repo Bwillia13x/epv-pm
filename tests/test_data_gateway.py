@@ -34,6 +34,12 @@ class MockDataSource(DataSource):
             raise Exception("API Error")
         return [MarketData(symbol=symbol, date=date.today(), price=100.0)]
 
+    def _get_insider_transactions(self):
+        pass
+
+    async def get_quote(self, symbol: str):
+        return {"symbol": symbol, "price": 100.0}
+
 @pytest.fixture
 def data_gateway(monkeypatch) -> DataGateway:
     """Returns a DataGateway instance with a mocked yfinance."""
