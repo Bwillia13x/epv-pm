@@ -18,6 +18,7 @@ from models.financial_models import (
 )
 from utils.cache_manager import CacheManager
 from utils.rate_limiter import RateLimiter
+from src.utils.http import get_client  # local import to avoid cycles
 
 class DataSource(ABC):
     """Abstract base class for data sources"""
@@ -62,20 +63,25 @@ class AlphaVantageSource(DataSource):
         """Get the latest quote from Alpha Vantage."""
         try:
             self.rate_limiter.wait_if_needed()
-            url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={symbol}&apikey={self.api_key}"
-            async with httpx.AsyncClient() as client:
-                response = await client.get(url)
-                response.raise_for_status()
-                data = response.json()
-                quote = data.get("Global Quote")
-                if quote:
-                    return {
-                        "symbol": quote["01. symbol"],
-                        "price": float(quote["05. price"]),
-                        "timestamp": datetime.now(),
-                        "provider": "AlphaVantage",
-                    }
-                return None
+
+            url = (
+                "https://www.alphavantage.co/query?function=GLOBAL_QUOTE"
+                f"&symbol={symbol}&apikey={self.api_key}"
+            )
+
+            client = get_client()
+            response = await client.get(url)
+            response.raise_for_status()
+            data = response.json()
+            quote = data.get("Global Quote")
+            if quote:
+                return {
+                    "symbol": quote["01. symbol"],
+                    "price": float(quote["05. price"]),
+                    "timestamp": datetime.now(),
+                    "provider": "AlphaVantage",
+                }
+            return None
         except Exception as e:
             self.logger.error(f"Error fetching quote for {symbol} from Alpha Vantage: {e}")
             return None
